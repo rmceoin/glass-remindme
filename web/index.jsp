@@ -41,6 +41,13 @@ limitations under the License.
   List<TimelineItem> timelineItems = MirrorClient.listItems(credential, 3L).getItems();
 
   Location locationHome = LocationUtil.getTag(userId, "home");
+  if (locationHome==null) {
+    locationHome = new Location();
+  }
+  Location locationWork = LocationUtil.getTag(userId, "work");
+  if (locationWork==null) {
+    locationWork = new Location();
+  }
 
   List<Subscription> subscriptions = MirrorClient.listSubscriptions(credential).getItems();
   boolean timelineSubscriptionExists = false;
@@ -89,14 +96,33 @@ limitations under the License.
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPt_lMcqqZ6hkW6_RrnNJE_QtPUCtVg1g&sensor=false">
     </script>
     <script type="text/javascript">
+      var homeLatlng = new google.maps.LatLng(<%= locationHome.getLatitude() %>, <%= locationHome.getLongitude() %>);
       function initialize() {
         var mapOptions = {
-          center: new google.maps.LatLng(-34.397, 150.644),
-          zoom: 8,
+          center: homeLatlng,
+          zoom: 14,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(document.getElementById("map-canvas-home"),
             mapOptions);
+	      var marker = new google.maps.Marker({
+	    	position: homeLatlng,
+	    	title:"Home"
+	      });
+	
+	      marker.setMap(map);
+	      
+			var homeOptions = {
+			  strokeColor: "#FF0000",
+			  strokeOpacity: 0.8,
+			  strokeWeight: 2,
+			  fillColor: "#FF0000",
+			  fillOpacity: 0.35,
+			  map: map,
+			  center: homeLatlng,
+			  radius: 161
+			};
+			homeCircle = new google.maps.Circle(homeOptions);
       }
       google.maps.event.addDomListener(window, 'load', initialize);
     </script>
@@ -138,65 +164,24 @@ limitations under the License.
     </div>
 
     <div class="span4">
-      <h2>Contacts</h2>
-
-      <p>By default, this project inserts a single contact that accepts
-        all content types. Learn more about contacts
-        <a href="https://developers.google.com/glass/contacts">here</a>.</p>
+      <h2>Location Tags</h2>
 
       <% if (locationHome!=null) { %>
-      	<p>Got home: <%= locationHome.getLatitude() %> </p>
+      	<h3>Home</h3>
       <% } else { %>
         <p>No home set</p>
       <% } %>
       <div id="map-canvas-home"></div>
 
+      <% if (locationWork!=null) { %>
+      	<h3>Work</h3>
+      <% } else { %>
+        <p>No work set</p>
+      <% } %>
+      <div id="map-canvas-work"></div>
+
     </div>
 
-    <div class="span4">
-      <h2>Subscriptions</h2>
-
-      <p>By default a subscription is inserted for changes to the
-        <code>timeline</code> collection. Learn more about subscriptions
-        <a href="https://developers.google.com/glass/subscriptions">here</a></p>
-
-      <p class="label label-info">Note: Subscriptions require SSL. <br>They will
-        not work on localhost.</p>
-
-      <% if (timelineSubscriptionExists) { %>
-      <form action="<%= WebUtil.buildUrl(request, "/main") %>"
-            method="post">
-        <input type="hidden" name="subscriptionId" value="timeline">
-        <input type="hidden" name="operation" value="deleteSubscription">
-        <button class="btn" type="submit" class="delete">Unsubscribe from
-          timeline updates
-        </button>
-      </form>
-      <% } else { %>
-      <form action="<%= WebUtil.buildUrl(request, "/main") %>" method="post">
-        <input type="hidden" name="operation" value="insertSubscription">
-        <input type="hidden" name="collection" value="timeline">
-        <button class="btn" type="submit">Subscribe to timeline updates</button>
-      </form>
-      <% }%>
-
-      <% if (locationSubscriptionExists) { %>
-      <form action="<%= WebUtil.buildUrl(request, "/main") %>"
-            method="post">
-        <input type="hidden" name="subscriptionId" value="locations">
-        <input type="hidden" name="operation" value="deleteSubscription">
-        <button class="btn" type="submit" class="delete">Unsubscribe from
-          location updates
-        </button>
-      </form>
-      <% } else { %>
-      <form action="<%= WebUtil.buildUrl(request, "/main") %>" method="post">
-        <input type="hidden" name="operation" value="insertSubscription">
-        <input type="hidden" name="collection" value="locations">
-        <button class="btn" type="submit">Subscribe to location updates</button>
-      </form>
-      <% }%>
-    </div>
   </div>
   
     <!-- Main hero unit for a primary marketing message or call to action -->

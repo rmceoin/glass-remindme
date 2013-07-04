@@ -22,13 +22,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@SuppressWarnings("serial")
 public class SignOutServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
     // It'd be nice to do some XSRF validation here
     AuthUtil.clearUserId(req);
-    resp.getWriter().write("You have been signed out.");
+    resp.getWriter().write("<p>You have been signed out.</p>\n");
+
+    resp.getWriter().write("<a href=\"/\">Login</a>");
 
     // If you are logged into other services, clear their sessions here :)
   }

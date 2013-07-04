@@ -138,7 +138,7 @@ public class LocationUtil {
 		return distanceInMiles;
 	}
 
-	public static String enterTag(String userId, Location previous, Location current) {
+	public static LocationTag enterTag(String userId, Location previous, Location current) {
 		if ((previous==null)||(current==null)) {
 			return null;
 		}
@@ -154,7 +154,7 @@ public class LocationUtil {
 		for (LocationTag locationTag : locationTags) {
 			if (distanceBetweenLocations(locationTag.getLocation(), current) < 0.1) {
 				LOG.info("matched tag location: "+locationTag.getTag());
-				return locationTag.getTag();
+				return locationTag;
 			}
 		}
 		LOG.info("no matched tag");

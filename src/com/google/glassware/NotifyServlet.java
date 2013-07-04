@@ -60,8 +60,7 @@ public class NotifyServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// Respond with OK and status 200 in a timely fashion to prevent
-		// redelivery
+		// Respond with OK and status 200 in a timely fashion to prevent redelivery
 		response.setContentType("text/html");
 		Writer writer = response.getWriter();
 		writer.append("OK");
@@ -111,9 +110,9 @@ public class NotifyServlet extends HttpServlet {
 			Location previousLocation = LocationUtil.get(userId);
 			LocationUtil.save(userId, location);
 
-			String enteredTag = LocationUtil.enterTag(userId, previousLocation, location);
+			LocationTag enteredTag = LocationUtil.enterTag(userId, previousLocation, location);
 			if (enteredTag != null) {
-				sendMap(credential, userId, location, "You arrived at "+enteredTag);
+				sendMap(credential, userId, enteredTag.getLocation(), "You arrived at " + enteredTag.getTag());
 			}
 		} else if (notification.getCollection().equals("timeline")) {
 			// Get the impacted timeline item

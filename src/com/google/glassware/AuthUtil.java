@@ -74,8 +74,8 @@ public class AuthUtil {
 
   public static void clearUserId(HttpServletRequest request) throws IOException {
     // Delete the credential in the credential store
-    String userId = getUserId(request);
-    new ListableAppEngineCredentialStore().delete(userId, getCredential(userId));
+//    String userId = getUserId(request);
+//    new ListableAppEngineCredentialStore().delete(userId, getCredential(userId));
 
     // Remove their ID from the local session
     request.getSession().removeAttribute("userId");
