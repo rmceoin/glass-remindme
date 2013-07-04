@@ -49,21 +49,6 @@ limitations under the License.
     locationWork = new Location();
   }
 
-  List<Subscription> subscriptions = MirrorClient.listSubscriptions(credential).getItems();
-  boolean timelineSubscriptionExists = false;
-  boolean locationSubscriptionExists = false;
-
-
-  if (subscriptions != null) {
-    for (Subscription subscription : subscriptions) {
-      if (subscription.getId().equals("timeline")) {
-        timelineSubscriptionExists = true;
-      }
-      if (subscription.getId().equals("locations")) {
-        locationSubscriptionExists = true;
-      }
-    }
-  }
 
 %>
 <html>
@@ -95,34 +80,11 @@ limitations under the License.
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPt_lMcqqZ6hkW6_RrnNJE_QtPUCtVg1g&sensor=false">
     </script>
+    <script type="text/javascript" src="/locationtags.js"></script>
     <script type="text/javascript">
-      var homeLatlng = new google.maps.LatLng(<%= locationHome.getLatitude() %>, <%= locationHome.getLongitude() %>);
       function initialize() {
-        var mapOptions = {
-          center: homeLatlng,
-          zoom: 14,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        var map = new google.maps.Map(document.getElementById("map-canvas-home"),
-            mapOptions);
-	      var marker = new google.maps.Marker({
-	    	position: homeLatlng,
-	    	title:"Home"
-	      });
-	
-	      marker.setMap(map);
-	      
-			var homeOptions = {
-			  strokeColor: "#FF0000",
-			  strokeOpacity: 0.8,
-			  strokeWeight: 2,
-			  fillColor: "#FF0000",
-			  fillOpacity: 0.35,
-			  map: map,
-			  center: homeLatlng,
-			  radius: 161
-			};
-			homeCircle = new google.maps.Circle(homeOptions);
+	      initmap(<%= locationHome.getLatitude() %>, <%= locationHome.getLongitude() %>, "Home", "map-canvas-home");
+	      initmap(<%= locationWork.getLatitude() %>, <%= locationWork.getLongitude() %>, "Home", "map-canvas-work");
       }
       google.maps.event.addDomListener(window, 'load', initialize);
     </script>
@@ -131,11 +93,9 @@ limitations under the License.
 <div class="navbar navbar-inverse navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">Glass RemindMe</a>
-
+      <a class="brand" href="#">Glass RemindMe</a> -
       <div class="nav-collapse collapse">
         <form class="navbar-form pull-right" action="/signout" method="post">
-          <%= userInfo.getName() %>
           <button type="submit" class="btn">Sign out</button>
         </form>
       </div>
@@ -149,12 +109,10 @@ limitations under the License.
   <!-- Example row of columns -->
   <div class="row" id="firstrow">
     <div class="span4">
-      <h2>Timeline</h2>
+      <h2>RemindMe Card</h2>
 
-      <p>When you first sign in, this Glassware inserts a welcome message. Use
-        these controls to insert more items into your timeline. Learn more about
-        the timeline APIs
-        <a href="https://developers.google.com/glass/timeline">here</a></p>
+      <p>When you first sign in, Glass RemindMe inserts a card. Use
+        this card to set your Home and Work locations.</p>
 
       <form action="<%= WebUtil.buildUrl(request, "/main") %>" method="post">
         <input type="hidden" name="operation" value="insertRemindMe">
