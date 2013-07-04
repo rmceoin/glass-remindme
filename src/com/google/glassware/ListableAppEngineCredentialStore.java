@@ -49,7 +49,7 @@ public class ListableAppEngineCredentialStore implements CredentialStore {
 	 * is {@code null} or blank, the application will log a warning. Suggested
 	 * format is "MyCompany-ProductName/1.0".
 	 */
-	private static final String APPLICATION_NAME = "randy-test-glass/1.0";
+	private static final String APPLICATION_NAME = "glass-remindme/1.0";
 
 	/** Global instance of the HTTP transport. */
 	private static HttpTransport HTTP_TRANSPORT;
@@ -78,22 +78,18 @@ public class ListableAppEngineCredentialStore implements CredentialStore {
 	public void store(String userId, Credential credential) {
 
 		Userinfo userInfo = null;
-		String userEmail=null;
 		String userFamilyName=null;
 		String userGivenName=null;
 		String userName=null;
 		String userPicture=null;
 		String userTimezone=null;
-		Boolean userVerifiedEmail=null;
 		try {
 			userInfo = getUserInfo(credential);
-			userEmail=userInfo.getEmail();
 			userFamilyName=userInfo.getFamilyName();
 			userGivenName=userInfo.getGivenName();
 			userName=userInfo.getName();
 			userPicture=userInfo.getPicture();
 			userTimezone=userInfo.getTimezone();
-			userVerifiedEmail=userInfo.getVerifiedEmail();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -107,13 +103,11 @@ public class ListableAppEngineCredentialStore implements CredentialStore {
 		entity.setProperty("refreshToken", credential.getRefreshToken());
 		entity.setProperty("expirationTimeMillis",
 				credential.getExpirationTimeMilliseconds());
-		entity.setProperty("userEmail", userEmail);
 		entity.setProperty("userFamilyName", userFamilyName);
 		entity.setProperty("userGivenName", userGivenName);
 		entity.setProperty("userName", userName);
 		entity.setProperty("userPicture", userPicture);
 		entity.setProperty("userTimezone", userTimezone);
-		entity.setProperty("userVerifiedEmail", userVerifiedEmail);
 		datastore.put(entity);
 	}
 
@@ -151,13 +145,11 @@ public class ListableAppEngineCredentialStore implements CredentialStore {
 		try {
 			Entity entity = datastore.get(key);
 			Userinfo userInfo=new Userinfo();
-            userInfo.setEmail((String) entity.getProperty("userEmail"));
             userInfo.setFamilyName((String) entity.getProperty("userFamilyName"));
             userInfo.setGivenName((String) entity.getProperty("userGivenName"));
             userInfo.setName((String) entity.getProperty("userName"));
             userInfo.setPicture((String) entity.getProperty("userPicture"));
             userInfo.setTimezone((String) entity.getProperty("userTimezone"));
-//          userInfo.setVerifiedEmail((boolean) entity.getProperty("userVerifiedEmail"));
 
 			return userInfo;
 		} catch (EntityNotFoundException exception) {

@@ -17,11 +17,13 @@ limitations under the License.
 <%@ page import="com.google.api.services.mirror.model.Contact" %>
 <%@ page import="com.google.glassware.MirrorClient" %>
 <%@ page import="com.google.glassware.WebUtil" %>
+<%@ page import="com.google.glassware.LocationUtil" %>
 <%@ page
     import="java.util.List" %>
 <%@ page import="com.google.api.services.mirror.model.TimelineItem" %>
 <%@ page import="com.google.api.services.mirror.model.Subscription" %>
 <%@ page import="com.google.api.services.mirror.model.Attachment" %>
+<%@ page import="com.google.api.services.mirror.model.Location" %>
 <%@ page import="com.google.api.services.oauth2.model.Userinfo" %>
 
 <%@ page import="com.google.glassware.MainServlet" %>
@@ -36,10 +38,9 @@ limitations under the License.
   Credential credential = com.google.glassware.AuthUtil.getCredential(userId);
   Userinfo userInfo = MirrorClient.getUserinfo(userId);
 
-  Contact contact = MirrorClient.getContact(credential, MainServlet.CONTACT_NAME);
-
   List<TimelineItem> timelineItems = MirrorClient.listItems(credential, 3L).getItems();
 
+  Location locationHome = LocationUtil.getTag(userId, "home");
 
   List<Subscription> subscriptions = MirrorClient.listSubscriptions(credential).getItems();
   boolean timelineSubscriptionExists = false;
@@ -82,9 +83,25 @@ limitations under the License.
  	#firstrow {
  		margin-top: 41px;
  	}
+      #map-canvas-home { height: 200px; width: 300px; }
   </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPt_lMcqqZ6hkW6_RrnNJE_QtPUCtVg1g&sensor=false">
+    </script>
+    <script type="text/javascript">
+      function initialize() {
+        var mapOptions = {
+          center: new google.maps.LatLng(-34.397, 150.644),
+          zoom: 8,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById("map-canvas-home"),
+            mapOptions);
+      }
+      google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
 </head>
-<body>
+<body onload="initialize()">
 <div class="navbar navbar-inverse navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container">
@@ -113,12 +130,6 @@ limitations under the License.
         the timeline APIs
         <a href="https://developers.google.com/glass/timeline">here</a></p>
 
-
-      <form action="<%= WebUtil.buildUrl(request, "/main") %>" method="post">
-        <input type="hidden" name="operation" value="insertItemAllUsers">
-        <input type="hidden" name="canonicalUrl" value="http://www.dallasnews.com/news/jfk50/reflect/20130522-dealey-plaza-memorial-planned-for-50th-anniversary-of-jfk-assassination.ece">
-        <button class="btn" type="submit">A card to all users</button>
-      </form>
       <form action="<%= WebUtil.buildUrl(request, "/main") %>" method="post">
         <input type="hidden" name="operation" value="insertRemindMe">
         <button class="btn" type="submit">Insert Remind Me card</button>
@@ -133,26 +144,13 @@ limitations under the License.
         all content types. Learn more about contacts
         <a href="https://developers.google.com/glass/contacts">here</a>.</p>
 
-      <% if (contact == null) { %>
-      <form class="span3" action="<%= WebUtil.buildUrl(request, "/main") %>"
-            method="post">
-        <input type="hidden" name="operation" value="insertContact">
-        <input type="hidden" name="iconUrl" value="<%= appBaseUrl +
-               "static/images/chipotle-tube-640x360.jpg" %>">
-        <input type="hidden" name="name"
-               value="<%= MainServlet.CONTACT_NAME %>">
-        <button class="btn" type="submit">Insert Java Quick Start Contact
-        </button>
-      </form>
+      <% if (locationHome!=null) { %>
+      	<p>Got home: <%= locationHome.getLatitude() %> </p>
       <% } else { %>
-      <form class="span3" action="<%= WebUtil.buildUrl(request, "/main") %>"
-            method="post">
-        <input type="hidden" name="operation" value="deleteContact">
-        <input type="hidden" name="id" value="<%= MainServlet.CONTACT_NAME %>">
-        <button class="btn" type="submit">Delete Java Quick Start Contact
-        </button>
-      </form>
+        <p>No home set</p>
       <% } %>
+      <div id="map-canvas-home"></div>
+
     </div>
 
     <div class="span4">

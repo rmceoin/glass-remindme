@@ -139,6 +139,9 @@ public class LocationUtil {
 	}
 
 	public static String enterTag(String userId, Location previous, Location current) {
+		if ((previous==null)||(current==null)) {
+			return null;
+		}
 		List<LocationTag> locationTags = getAllTags(userId);
 		if (locationTags == null) {
 			// no tags for this user
