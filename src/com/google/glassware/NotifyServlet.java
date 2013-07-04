@@ -25,24 +25,14 @@ import com.google.api.services.mirror.model.NotificationConfig;
 import com.google.api.services.mirror.model.Subscription;
 import com.google.api.services.mirror.model.TimelineItem;
 import com.google.api.services.mirror.model.UserAction;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -175,39 +165,7 @@ public class NotifyServlet extends HttpServlet {
 				}
 			} else if (notification.getUserActions().contains(new UserAction().setType("REPLY"))) {
 				LOG.info("got a REPLY: " + timelineItem.getText());
-				Pattern pattern = Pattern.compile("^remind me to (.*) at ([a-z]+)$");
-				Matcher matcher = pattern.matcher(timelineItem.getText());
-				if (matcher.find()) {
-					String action = matcher.group(1);
-					String tag = matcher.group(2);
-					LOG.info("matched: " + action + " at " + tag);
-				}
-			} else if (notification.getUserActions().contains(new UserAction().setType("CUSTOM").setPayload("drill"))) {
-				LOG.info("custom drill");
-				TimelineItem drillItem = new TimelineItem();
-				drillItem.setText("Drill, baby drill!");
-				drillItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
-
-				try {
-					URL url = new URL("http://nazret.com/blog/media/blogs/new/oil_drill2042909.jpg");
-					URLConnection connection1 = url.openConnection();
-
-					MirrorClient.insertTimelineItem(credential, drillItem, "image/jpeg", connection1.getInputStream());
-				} catch (Exception e) {
-					LOG.info("Couldn't get URL");
-					MirrorClient.insertTimelineItem(credential, drillItem);
-				}
-
-				Key drilledKey = KeyFactory.createKey("Drilling", "dont know");
-				Date date = new Date();
-				Entity drilled = new Entity("drilled", drilledKey);
-				drilled.setProperty("userId", userId);
-				drilled.setProperty("date", date);
-				drilled.setProperty("timelineId", timelineItem.getId());
-
-				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				datastore.put(drilled);
-
+				ReplyParser.parse(userId, timelineItem.getText());
 			} else {
 				LOG.warning("I don't know what to do with this notification, so I'm ignoring it." + notification.getUserActions());
 			}
@@ -238,7 +196,6 @@ public class NotifyServlet extends HttpServlet {
 			try {
 				MirrorClient.insertSubscription(credential, WebUtil.buildUrl(req, "/notify"), userId, "locations");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -265,7 +222,7 @@ public class NotifyServlet extends HttpServlet {
 		builder.append("</section>\n");
 		builder.append("<footer>");
 		builder.append("<div>");
-		builder.append("Randy Glass Test");
+		builder.append("Glass RemindMe");
 		builder.append("</div>");
 		builder.append("</footer>\n");
 		builder.append("</article>");
