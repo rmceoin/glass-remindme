@@ -25,7 +25,7 @@ function initmap(latitude, longitude, name, idname) {
 		fillOpacity: 0.35,
 		map: map,
 		center: latlng,
-		radius: 161
+		radius: 100
 	};
 	circle = new google.maps.Circle(circleOptions);
 }

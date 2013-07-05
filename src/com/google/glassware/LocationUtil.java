@@ -27,6 +27,9 @@ public class LocationUtil {
 	private static final String LOCATION_CURRENT = KIND + ".current";
 	private static final String LOCATION_TAGS = KIND + ".tags";
 
+	// meters surrounding a tag location that is considered within the tag
+	public static final int TAG_RADIUS = 100;
+
 	/**
 	 * Save the glass wearer's current location.
 	 * 
@@ -134,12 +137,12 @@ public class LocationUtil {
 	public static double distanceBetweenLocations(Location location1, Location location2) {
 		LatLng point1 = new LatLng(location1.getLatitude(), location1.getLongitude());
 		LatLng point2 = new LatLng(location2.getLatitude(), location2.getLongitude());
-		double distanceInMiles = LatLngTool.distance(point1, point2, LengthUnit.MILE);
+		double distanceInMiles = LatLngTool.distance(point1, point2, LengthUnit.METER);
 		return distanceInMiles;
 	}
 
 	public static LocationTag enterTag(String userId, Location previous, Location current) {
-		if ((previous==null)||(current==null)) {
+		if ((previous == null) || (current == null)) {
 			return null;
 		}
 		List<LocationTag> locationTags = getAllTags(userId);
@@ -147,13 +150,14 @@ public class LocationUtil {
 			// no tags for this user
 			return null;
 		}
-		if (distanceBetweenLocations(previous, current) < 0.1) {
-			LOG.info("not enough distance between previous and current");
-			return null;
-		}
+		// if (distanceBetweenLocations(previous, current) < 100) {
+		// LOG.info("not enough distance between previous and current");
+		// return null;
+		// }
 		for (LocationTag locationTag : locationTags) {
-			if (distanceBetweenLocations(locationTag.getLocation(), current) < 0.1) {
-				LOG.info("matched tag location: "+locationTag.getTag());
+			if ((distanceBetweenLocations(locationTag.getLocation(), previous) > TAG_RADIUS)
+					&& (distanceBetweenLocations(locationTag.getLocation(), current) <= TAG_RADIUS)) {
+				LOG.info("matched tag location: " + locationTag.getTag());
 				return locationTag;
 			}
 		}

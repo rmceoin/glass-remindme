@@ -103,6 +103,18 @@ public class NotifyServlet extends HttpServlet {
 			LocationTag enteredTag = LocationUtil.enterTag(userId, previousLocation, location);
 			if (enteredTag != null) {
 				sendMap(credential, userId, enteredTag.getLocation(), "You arrived at " + enteredTag.getTag());
+				
+				List<Reminder> reminders=ReminderUtil.getAllReminders(userId, enteredTag.getTag());
+				if (reminders!=null) {
+					for (Reminder reminder : reminders) {
+						// send the reminder
+						TimelineItem reminderItem = new TimelineItem();
+						reminderItem.setTitle(MainServlet.CONTACT_NAME);
+						reminderItem.setText(reminder.getReminder());
+						reminderItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
+						MirrorClient.insertTimelineItem(credential, reminderItem);
+					}
+				}
 			}
 		} else if (notification.getCollection().equals("timeline")) {
 			// Get the impacted timeline item

@@ -18,6 +18,8 @@ limitations under the License.
 <%@ page import="com.google.glassware.MirrorClient" %>
 <%@ page import="com.google.glassware.WebUtil" %>
 <%@ page import="com.google.glassware.LocationUtil" %>
+<%@ page import="com.google.glassware.Reminder" %>
+<%@ page import="com.google.glassware.ReminderUtil" %>
 <%@ page
     import="java.util.List" %>
 <%@ page import="com.google.api.services.mirror.model.TimelineItem" %>
@@ -108,17 +110,42 @@ limitations under the License.
 
   <!-- Example row of columns -->
   <div class="row" id="firstrow">
-    <div class="span4">
+    <div class="span8">
       <h2>RemindMe Card</h2>
 
       <p>When you first sign in, Glass RemindMe inserts a card. Use
-        this card to set your Home and Work locations.</p>
+        this card to set your Home and Work locations.
+        Be sure to pin the card so it's readily accessible.</p>
 
       <form action="<%= WebUtil.buildUrl(request, "/main") %>" method="post">
         <input type="hidden" name="operation" value="insertRemindMe">
         <button class="btn" type="submit">Insert Remind Me card</button>
       </form>
+      
+      <p>To set a reminder, use the card and REPLY to it by saying a 
+      sentence in the following format:</p>
+      
+      <pre>remind me to "do something" at "home"</pre>
 
+	  <table class="table">
+		<tr>
+			<th> Tag </th>
+			<th> Reminder </th>
+			<th> Created </th>
+		</tr>
+	  <%
+		List<Reminder> reminders=ReminderUtil.getAllReminders(userId);
+		if (reminders!=null) {
+			for (Reminder reminder : reminders) { %>
+			<tr>
+				<td> <%= reminder.getTag() %> </td>
+				<td> <%= reminder.getReminder() %> </td>
+				<td> <%= reminder.getCreated() %> </td>
+			</tr>
+		<%	}
+		}
+	  %>
+	  </table>
     </div>
 
     <div class="span4">

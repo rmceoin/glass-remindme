@@ -23,13 +23,17 @@ public class ReplyParser {
 	private static final Logger LOG = Logger.getLogger(MainServlet.class.getSimpleName());
 
 	public static void parse(String userId, String reply) {
-		Pattern pattern = Pattern.compile("^remind me to (.*) at ([a-z]+)$");
+		// remind me to [do something] at [home]
+		// remind me to [do something] when i get [home]
+		// remind me to [do something] when i get to [work]
+		Pattern pattern = Pattern.compile("^remind me to (.*) (at|when i get|when i get to) ([a-z]+)$");
 		Matcher matcher = pattern.matcher(reply);
 		if (matcher.find()) {
-			String action = matcher.group(1);
-			String tag = matcher.group(2);
-			LOG.info("matched: " + action + " at " + tag);
-			ReminderUtil.saveReminder(userId, tag, action);
+			String reminder = matcher.group(1);
+			String middle = matcher.group(2);
+			String tag = matcher.group(3);
+			LOG.info("matched: " + reminder + " - " + middle + " - " + tag);
+			ReminderUtil.saveReminder(userId, tag, reminder);
 		}
 	}
 }

@@ -31,7 +31,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 public class ReminderUtil {
 	private static final Logger LOG = Logger.getLogger(MainServlet.class.getSimpleName());
 
-	private static final String KIND = LocationUtil.class.getName();
+	private static final String KIND = ReminderUtil.class.getName();
 	private static final String REMINDERS = KIND + ".reminders";
 
 	public static void saveReminder(String userId, String tag, String reminder) {
@@ -48,7 +48,7 @@ public class ReminderUtil {
 		LOG.info("Saved reminder for " + userId + " tag " + tag);
 	}
 
-	public static List<Reminder> getAllRemindersByTag(String userId, String tag) {
+	public static List<Reminder> getAllReminders(String userId, String tag) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
@@ -62,7 +62,28 @@ public class ReminderUtil {
 			Reminder reminder = new Reminder();
 			reminder.setUserId(userId);
 			reminder.setTag(tag);
-			reminder.setCreated((String) reminderEntity.getProperty("created"));
+			reminder.setCreated((Date) reminderEntity.getProperty("created"));
+			reminder.setReminder((String) reminderEntity.getProperty("reminder"));
+
+			reminders.add(reminder);
+		}
+		return reminders;
+	}
+
+	public static List<Reminder> getAllReminders(String userId) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+		Query reminderQuery = new Query(REMINDERS).setFilter(userIdFilter);
+		Iterable<Entity> reminderEntities = datastore.prepare(reminderQuery).asIterable();
+
+		List<Reminder> reminders = new ArrayList<Reminder>();
+		for (Entity reminderEntity : reminderEntities) {
+			LOG.info("found: " + userId + " " + reminderEntity.getProperty("tag"));
+			Reminder reminder = new Reminder();
+			reminder.setUserId(userId);
+			reminder.setTag((String) reminderEntity.getProperty("tag"));
+			reminder.setCreated((Date) reminderEntity.getProperty("created"));
 			reminder.setReminder((String) reminderEntity.getProperty("reminder"));
 
 			reminders.add(reminder);

@@ -15,6 +15,8 @@
  */
 package com.google.glassware;
 
+import java.util.Date;
+
 public class Reminder {
 	public String getUserId() {
 		return userId;
@@ -22,10 +24,10 @@ public class Reminder {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	public String getCreated() {
+	public Date getCreated() {
 		return created;
 	}
-	public void setCreated(String created) {
+	public void setCreated(Date created) {
 		this.created = created;
 	}
 	public String getTag() {
@@ -41,7 +43,7 @@ public class Reminder {
 		this.reminder = reminder;
 	}
 	private String userId;
-	private String created;
+	private Date created;
 	private String tag;
 	private String reminder;
 
