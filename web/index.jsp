@@ -77,7 +77,8 @@ limitations under the License.
  	#firstrow {
  		margin-top: 41px;
  	}
-      #map-canvas-home { height: 200px; width: 300px; }
+    #map-canvas-home { height: 200px; width: 300px; }
+    #map-canvas-work { height: 200px; width: 300px; }
   </style>
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPt_lMcqqZ6hkW6_RrnNJE_QtPUCtVg1g&sensor=false">

@@ -210,4 +210,19 @@ public class MirrorClient {
 				attachmentId).execute();
 		return attachmentMetadata.getContentType();
 	}
+	/**
+	 * Updates a timeline item.
+	 * 
+	 * @param credential
+	 *            the user's credential
+	 * @param id
+	 *            the timeline id to update
+	 * @param item
+	 *            the item to insert
+	 * @author Randy McEoin
+	 */
+	public static TimelineItem updateTimelineItem(Credential credential,
+			String id, TimelineItem item) throws IOException {
+		return getMirror(credential).timeline().update(id, item).execute();
+	}
 }

@@ -137,8 +137,8 @@ public class LocationUtil {
 	public static double distanceBetweenLocations(Location location1, Location location2) {
 		LatLng point1 = new LatLng(location1.getLatitude(), location1.getLongitude());
 		LatLng point2 = new LatLng(location2.getLatitude(), location2.getLongitude());
-		double distanceInMiles = LatLngTool.distance(point1, point2, LengthUnit.METER);
-		return distanceInMiles;
+		double distanceInMeters = LatLngTool.distance(point1, point2, LengthUnit.METER);
+		return distanceInMeters;
 	}
 
 	public static LocationTag enterTag(String userId, Location previous, Location current) {
@@ -155,8 +155,12 @@ public class LocationUtil {
 		// return null;
 		// }
 		for (LocationTag locationTag : locationTags) {
-			if ((distanceBetweenLocations(locationTag.getLocation(), previous) > TAG_RADIUS)
-					&& (distanceBetweenLocations(locationTag.getLocation(), current) <= TAG_RADIUS)) {
+			double tagDistanceFromPrevious=distanceBetweenLocations(locationTag.getLocation(), previous);
+			double tagDistanceFromCurrent=distanceBetweenLocations(locationTag.getLocation(), current);
+			LOG.info("previous from " + locationTag.getTag() + ": " + tagDistanceFromPrevious);
+			LOG.info("current from " + locationTag.getTag() + ": " + tagDistanceFromCurrent);
+			if ((tagDistanceFromPrevious > TAG_RADIUS)
+					&& (tagDistanceFromCurrent <= TAG_RADIUS)) {
 				LOG.info("matched tag location: " + locationTag.getTag());
 				return locationTag;
 			}

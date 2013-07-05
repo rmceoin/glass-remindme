@@ -60,16 +60,9 @@ public class NewUserBootstrapper {
 			LOG.warning("Failed to create timeline subscription. Might be running on " + "localhost. Details:" + e.getDetails().toPrettyString());
 		}
 
-		// Send welcome timeline item
-//		TimelineItem timelineItem = new TimelineItem();
-//		timelineItem.setText("Welcome to Glass RemindMe");
-//		timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
-//		TimelineItem insertedItem = MirrorClient.insertTimelineItem(credential, timelineItem);
-//		LOG.info("Bootstrapper inserted welcome message " + insertedItem.getId() + " for user " + userId);
-
-		MainServlet.InsertRemindMeCard(credential, req);
+		RemindMeCard.insert(userId, credential, req);
 		
-		NewUserInfo(userId, credential);
+//		NewUserInfo(userId, credential);
 
 	}
 

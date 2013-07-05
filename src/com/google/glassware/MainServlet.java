@@ -77,7 +77,7 @@ public class MainServlet extends HttpServlet {
 		} else if (req.getParameter("operation").equals("insertRemindMe")) {
 			LOG.fine("Inserting Remind Me");
 
-			InsertRemindMeCard(credential, req);
+			RemindMeCard.insert(userId, credential, req);
 
 			message = "Insert a Set Location card.";
 
@@ -113,36 +113,5 @@ public class MainServlet extends HttpServlet {
 		res.sendRedirect(WebUtil.buildUrl(req, "/"));
 	}
 
-	public static void InsertRemindMeCard(Credential credential, HttpServletRequest req) throws IOException {
-		TimelineItem timelineItem = new TimelineItem();
-		timelineItem.setTitle(CONTACT_NAME);
-		timelineItem.setText("Remind Me");
 
-		List<MenuItem> menuItemList = new ArrayList<MenuItem>();
-		menuItemList.add(new MenuItem().setAction("REPLY"));
-
-		List<MenuValue> menuAtHomeValues = new ArrayList<MenuValue>();
-		menuAtHomeValues.add(new MenuValue().setIconUrl(WebUtil.buildUrl(req, "/static/images/1-Normal-Home-icon.png")).setDisplayName("At Home"));
-		menuItemList.add(new MenuItem().setValues(menuAtHomeValues).setId("athome").setAction("CUSTOM"));
-
-		List<MenuValue> menuAtWorkValues = new ArrayList<MenuValue>();
-		menuAtWorkValues.add(new MenuValue().setIconUrl(WebUtil.buildUrl(req, "/static/images/Briefcase.png")).setDisplayName("At Work"));
-		menuItemList.add(new MenuItem().setValues(menuAtWorkValues).setId("atwork").setAction("CUSTOM"));
-
-		List<MenuValue> menuShowHomeValues = new ArrayList<MenuValue>();
-		menuShowHomeValues.add(new MenuValue().setIconUrl(WebUtil.buildUrl(req, "/static/images/1-Normal-Home-icon.png")).setDisplayName("Show Home"));
-		menuItemList.add(new MenuItem().setValues(menuShowHomeValues).setId("showhome").setAction("CUSTOM"));
-
-		List<MenuValue> menuShowWorkValues = new ArrayList<MenuValue>();
-		menuShowWorkValues.add(new MenuValue().setIconUrl(WebUtil.buildUrl(req, "/static/images/Briefcase.png")).setDisplayName("Show Work"));
-		menuItemList.add(new MenuItem().setValues(menuShowWorkValues).setId("showwork").setAction("CUSTOM"));
-
-		menuItemList.add(new MenuItem().setAction("TOGGLE_PINNED"));
-		menuItemList.add(new MenuItem().setAction("DELETE"));
-
-		timelineItem.setMenuItems(menuItemList);
-		timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
-
-		MirrorClient.insertTimelineItem(credential, timelineItem);
-	}
 }
