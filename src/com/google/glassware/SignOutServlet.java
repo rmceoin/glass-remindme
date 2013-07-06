@@ -31,8 +31,9 @@ public class SignOutServlet extends HttpServlet {
     AuthUtil.clearUserId(req);
     resp.getWriter().write("<p>You have been signed out.</p>\n");
 
-    resp.getWriter().write("<a href=\"/\">Login</a>");
+    resp.getWriter().write("<a href=\"/site\">Login</a>");
 
     // If you are logged into other services, clear their sessions here :)
+	resp.sendRedirect(WebUtil.buildUrl(req, "/"));
   }
 }

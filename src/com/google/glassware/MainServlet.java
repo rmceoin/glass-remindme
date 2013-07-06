@@ -18,15 +18,9 @@ package com.google.glassware;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.mirror.model.Contact;
-import com.google.api.services.mirror.model.MenuItem;
-import com.google.api.services.mirror.model.MenuValue;
-import com.google.api.services.mirror.model.NotificationConfig;
-import com.google.api.services.mirror.model.TimelineItem;
 import com.google.common.collect.Lists;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
@@ -110,7 +104,7 @@ public class MainServlet extends HttpServlet {
 			message = "I don't know how to do that";
 		}
 		WebUtil.setFlash(req, message);
-		res.sendRedirect(WebUtil.buildUrl(req, "/"));
+		res.sendRedirect(WebUtil.buildUrl(req, "/site"));
 	}
 
 

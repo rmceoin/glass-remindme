@@ -68,7 +68,7 @@ public class AuthServlet extends HttpServlet {
       NewUserBootstrapper.bootstrapNewUser(req, userId);
 
       // Redirect back to index
-      res.sendRedirect(WebUtil.buildUrl(req, "/"));
+      res.sendRedirect(WebUtil.buildUrl(req, "/site"));
       return;
     }
 
