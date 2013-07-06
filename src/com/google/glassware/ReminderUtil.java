@@ -15,11 +15,15 @@
  */
 package com.google.glassware;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.services.mirror.model.NotificationConfig;
+import com.google.api.services.mirror.model.TimelineItem;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -89,5 +93,14 @@ public class ReminderUtil {
 			reminders.add(reminder);
 		}
 		return reminders;
+	}
+	
+	public static void sendReminder(Credential credential, Reminder reminder) throws IOException {
+		// send the reminder
+		TimelineItem reminderItem = new TimelineItem();
+		reminderItem.setTitle(MainServlet.CONTACT_NAME);
+		reminderItem.setText("Now that you are at "+reminder.getTag()+", remember to "+reminder.getReminder()+".");
+		reminderItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
+		MirrorClient.insertTimelineItem(credential, reminderItem);
 	}
 }

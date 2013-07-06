@@ -143,17 +143,20 @@ public class LocationUtil {
 
 	public static LocationTag enterTag(String userId, Location previous, Location current) {
 		if ((previous == null) || (current == null)) {
+			LOG.info("previous or current was null");
 			return null;
 		}
 		List<LocationTag> locationTags = getAllTags(userId);
 		if (locationTags == null) {
 			// no tags for this user
+			LOG.info("no tags for this user");
 			return null;
 		}
 		// if (distanceBetweenLocations(previous, current) < 100) {
 		// LOG.info("not enough distance between previous and current");
 		// return null;
 		// }
+		LOG.info("size of locationTags="+locationTags.size());
 		for (LocationTag locationTag : locationTags) {
 			double tagDistanceFromPrevious=distanceBetweenLocations(locationTag.getLocation(), previous);
 			double tagDistanceFromCurrent=distanceBetweenLocations(locationTag.getLocation(), current);

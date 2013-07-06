@@ -76,11 +76,12 @@ limitations under the License.
     <url-pattern>/signout</url-pattern>
   </servlet-mapping>
 
-<static-files>
-  <include path="/favicon.ico" expiration="1d" />
-</static-files>
+  <static-files>
+    <include path="/favicon.ico" expiration="1d" />
+  </static-files>
 
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
+  
 </web-app>
