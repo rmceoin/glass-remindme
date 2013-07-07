@@ -41,6 +41,11 @@ limitations under the License.
       <artifactId>google-api-services-mirror</artifactId>
       <version>v1-rev11-1.15.0-rc</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.http-client</groupId>
+      <artifactId>google-http-client-jackson2</artifactId>
+      <version>1.15.0-rc</version>
+    </dependency>
 
     <dependency>
       <groupId>com.google.apis</groupId>

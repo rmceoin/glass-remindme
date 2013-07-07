@@ -52,16 +52,11 @@ public class AuthFilter implements Filter {
         return;
       }
 
-      // Are we in the middle of an auth flow? IF so skip check.
-      if (httpRequest.getRequestURI().equals("/oauth2callback")) {
+      // skip auth for static content, middle of auth flow, notify servlet
+      if (httpRequest.getRequestURI().startsWith("/static") ||
+          httpRequest.getRequestURI().equals("/oauth2callback") ||
+          httpRequest.getRequestURI().equals("/notify")) {
         LOG.info("Skipping auth check during auth flow");
-        filterChain.doFilter(request, response);
-        return;
-      }
-
-      // Is this a robot visit to the notify servlet? If so skip check
-      if (httpRequest.getRequestURI().equals("/notify")) {
-        LOG.info("Skipping auth check for notify servlet");
         filterChain.doFilter(request, response);
         return;
       }

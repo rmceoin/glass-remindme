@@ -17,7 +17,7 @@ package com.google.glassware;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.mirror.Mirror;
 import com.google.api.services.mirror.model.Location;
 import com.google.api.services.mirror.model.Notification;
@@ -46,7 +46,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @SuppressWarnings("serial")
 public class NotifyServlet extends HttpServlet {
-	private static final Logger LOG = Logger.getLogger(MainServlet.class.getSimpleName());
+	private static final Logger LOG = Logger.getLogger(NotifyServlet.class.getSimpleName());
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

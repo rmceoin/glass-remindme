@@ -38,11 +38,11 @@ public class ReminderUtil {
 
 	private static final String KIND = ReminderUtil.class.getName();
 	private static final String REMINDERS = KIND + ".reminders";
-
+	
 	public static void saveReminder(String userId, String tag, String reminder) {
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Entity entity = new Entity(REMINDERS, userId + tag);
+		Entity entity = new Entity(REMINDERS);
 		entity.setProperty("userId", userId);
 		Date date = new Date();
 		entity.setProperty("created", date); // GMT

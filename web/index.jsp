@@ -60,9 +60,6 @@ limitations under the License.
     <div class="container">
       <a class="brand" href="#">Glass RemindMe</a>
       <div class="nav-collapse collapse">
-        <form class="navbar-form pull-right" action="/site" method="post">
-          <button type="submit" class="btn">Login</button>
-        </form>
       </div>
       <!--/.nav-collapse -->
     </div>

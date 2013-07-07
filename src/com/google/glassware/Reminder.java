@@ -42,9 +42,9 @@ public class Reminder {
 	public void setReminder(String reminder) {
 		this.reminder = reminder;
 	}
+
 	private String userId;
 	private Date created;
 	private String tag;
 	private String reminder;
-
 }

@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="/home/randy/workspace/glass-remindme/web/WEB-INF/lib/google-api-client-servlet-1.15.0-rc.jar"/>
 	<classpathentry kind="lib" path="/home/randy/workspace/glass-remindme/web/WEB-INF/lib/google-http-client-1.15.0-rc.jar"/>
 	<classpathentry kind="lib" path="/home/randy/workspace/glass-remindme/web/WEB-INF/lib/google-http-client-appengine-1.15.0-rc.jar"/>
-	<classpathentry kind="lib" path="/home/randy/workspace/glass-remindme/web/WEB-INF/lib/google-http-client-jackson-1.15.0-rc.jar"/>
 	<classpathentry kind="lib" path="/home/randy/workspace/glass-remindme/web/WEB-INF/lib/google-oauth-client-1.15.0-rc.jar"/>
 	<classpathentry kind="lib" path="/home/randy/workspace/glass-remindme/web/WEB-INF/lib/google-oauth-client-appengine-1.15.0-rc.jar"/>
 	<classpathentry kind="lib" path="/home/randy/workspace/glass-remindme/web/WEB-INF/lib/google-oauth-client-servlet-1.15.0-rc.jar"/>
@@ -178,5 +177,7 @@
 			<attribute name="javadoc_location" value="file:/home/randy/appengine-java-sdk-1.8.1.1/docs/javadoc/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/google-http-client-jackson-1.15.0-rc.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/google-http-client-jackson2-1.15.0-rc.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
