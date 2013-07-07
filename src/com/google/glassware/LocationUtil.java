@@ -50,7 +50,7 @@ public class LocationUtil {
 		LOG.info("Saved location for " + userId);
 	}
 
-	public static void saveTag(String userId, Location location, String tag) {
+	public static void saveTag(String userId, Location location, String tag, String status) {
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity entity = new Entity(LOCATION_TAGS, userId + tag);
@@ -60,6 +60,7 @@ public class LocationUtil {
 		Date date = new Date();
 		entity.setProperty("date", date); // GMT
 		entity.setProperty("tag", tag);
+		entity.setProperty("status", status);
 
 		datastore.put(entity);
 		LOG.info("Saved location for " + userId + " tag " + tag);
@@ -128,6 +129,7 @@ public class LocationUtil {
 			tag.setUserId(userId);
 			tag.setLocation(location);
 			tag.setTag((String) tagEntity.getProperty("tag"));
+			tag.setStatus((String) tagEntity.getProperty("status"));
 
 			tags.add(tag);
 		}
@@ -156,19 +158,39 @@ public class LocationUtil {
 		// LOG.info("not enough distance between previous and current");
 		// return null;
 		// }
-		LOG.info("size of locationTags="+locationTags.size());
+		LOG.info("size of locationTags=" + locationTags.size());
+		LocationTag foundLocationTag = null;
 		for (LocationTag locationTag : locationTags) {
-			double tagDistanceFromPrevious=distanceBetweenLocations(locationTag.getLocation(), previous);
-			double tagDistanceFromCurrent=distanceBetweenLocations(locationTag.getLocation(), current);
-			LOG.info("previous from " + locationTag.getTag() + ": " + tagDistanceFromPrevious);
-			LOG.info("current from " + locationTag.getTag() + ": " + tagDistanceFromCurrent);
-			if ((tagDistanceFromPrevious > TAG_RADIUS)
-					&& (tagDistanceFromCurrent <= TAG_RADIUS)) {
-				LOG.info("matched tag location: " + locationTag.getTag());
-				return locationTag;
+
+			double tagDistanceFromCurrent = distanceBetweenLocations(locationTag.getLocation(), current);
+			String status = locationTag.getStatus();
+			LOG.info("tag=" + locationTag.getTag() + " distance=" + tagDistanceFromCurrent + " status=" + locationTag.getStatus());
+			if ((tagDistanceFromCurrent <= TAG_RADIUS) && ((status == null) || (!status.contentEquals(LocationTag.STATUS_AT)))) {
+				// We are at the tag location and were previously away from it
+				LOG.info("arrived at " + locationTag.getTag());
+				saveTag(userId, locationTag.getLocation(), locationTag.getTag(), LocationTag.STATUS_AT);
+				foundLocationTag = locationTag;
+			} else if ((tagDistanceFromCurrent > TAG_RADIUS) && ((status == null) || (!status.contentEquals(LocationTag.STATUS_AWAY)))) {
+				// We are away from the tag location and were previously at it
+				// ... we have left the tag location
+				LOG.info("left " + locationTag.getTag());
+				saveTag(userId, locationTag.getLocation(), locationTag.getTag(), LocationTag.STATUS_AWAY);
 			}
+			/*
+			 * double
+			 * tagDistanceFromPrevious=distanceBetweenLocations(locationTag
+			 * .getLocation(), previous); LOG.info("previous from " +
+			 * locationTag.getTag() + ": " + tagDistanceFromPrevious);
+			 * LOG.info("current from " + locationTag.getTag() + ": " +
+			 * tagDistanceFromCurrent); if ((tagDistanceFromPrevious >
+			 * TAG_RADIUS) && (tagDistanceFromCurrent <= TAG_RADIUS)) {
+			 * LOG.info("matched tag location: " + locationTag.getTag()); return
+			 * locationTag; }
+			 */
 		}
-		LOG.info("no matched tag");
-		return null;
+		if (foundLocationTag == null) {
+			LOG.info("no location found");
+		}
+		return foundLocationTag;
 	}
 }

@@ -4,6 +4,9 @@ import com.google.api.services.mirror.model.Location;
 
 public class LocationTag {
 
+	public static final String STATUS_AWAY = "away";
+	public static final String STATUS_AT = "at";
+
 	public String getUserId() {
 		return userId;
 	}
@@ -22,7 +25,14 @@ public class LocationTag {
 	public void setTag(String tag) {
 		this.tag = tag;
 	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	private String userId;
 	private Location location;
 	private String tag;
+	private String status;
 }

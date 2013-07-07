@@ -36,7 +36,8 @@ limitations under the License.
   <title>Glass RemindMe</title>
   <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet"
         media="screen">
-
+        
+  <link href="/site/site.css" rel="stylesheet">
   <style>
     .button-icon {
       max-width: 75px;
@@ -48,9 +49,6 @@ limitations under the License.
       list-style: none;
     }
 
-    .btn {
-      width: 100%;
-    }
  	#firstrow {
  		margin-top: 41px;
  	}
@@ -71,32 +69,43 @@ limitations under the License.
   </div>
 </div>
 
+<div class="jumbotron masthead">
+  <div class="container">
+    <h1>Glass RemindMe</h1>
+    <p>Get Glass to help you to remember stuff when you get home or to work.</p>
+    
+    <p><a href="/site" class="btn btn-primary btn-large">Login</a></p>
+    
+    <ul class="masthead-links">
+      <li>
+        <a href="http://github.com/rmceoin/glass-remindme">GitHub project</a>
+      </li>
+      <li>
+        Version 1.0
+      </li>
+    </ul>
+  </div>
+</div>
+
 <div class="container">
 
-  <!-- Example row of columns -->
-  <div class="row" id="firstrow">
-    <div class="span8">
       <h2>RemindMe Card</h2>
 
       <p>When you first sign in, Glass RemindMe inserts a card. Use
         this card to set your Home and Work locations.
         Be sure to pin the card so it's readily accessible.</p>
 
-      <a href="/site">Login</a>
-    </div>
-
-  </div>
-  
-    <!-- Main hero unit for a primary marketing message or call to action -->
-  <div id="timeline" class="hero-unit">
-    <h1>Recent Timeline</h1>
-    <div style="clear:both;"></div>
-  </div>
+      <p><img src="/static/images/at-work-example.png" width="640" height="360"></p>
+      
+      <hr>
+      
+      <p>Upon arrival home, your Glass will be sent the reminder you had told it earlier.</p>
+      
+      <p><img src="/static/images/home-reminder-example.png" width="640" height="360"></p>
   
 </div>
 
-<script
-    src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="/static/bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>

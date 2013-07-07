@@ -102,12 +102,12 @@ public class NotifyServlet extends HttpServlet {
 
 			LocationTag enteredTag = LocationUtil.enterTag(userId, previousLocation, location);
 			if (enteredTag != null) {
-				sendMap(credential, userId, enteredTag.getLocation(), "You arrived at " + enteredTag.getTag());
+//				sendMap(credential, userId, enteredTag.getLocation(), "You arrived at " + enteredTag.getTag());
 				
 				List<Reminder> reminders=ReminderUtil.getAllReminders(userId, enteredTag.getTag());
 				if (reminders!=null) {
 					for (Reminder reminder : reminders) {
-						ReminderUtil.sendReminder(credential, reminder);
+						ReminderUtil.sendReminder(credential, reminder, enteredTag.getLocation());
 					}
 				}
 			}
@@ -143,7 +143,7 @@ public class NotifyServlet extends HttpServlet {
 				Location location = LocationUtil.get(userId);
 				if (location != null) {
 					LOG.info("got location");
-					LocationUtil.saveTag(userId, location, "home");
+					LocationUtil.saveTag(userId, location, "home", LocationTag.STATUS_AT);
 				} else {
 					LOG.info("missing location");
 					checkLocationSubscription(credential, userId, request);
@@ -154,7 +154,7 @@ public class NotifyServlet extends HttpServlet {
 				Location location = LocationUtil.get(userId);
 				if (location != null) {
 					LOG.info("got location");
-					LocationUtil.saveTag(userId, location, "work");
+					LocationUtil.saveTag(userId, location, "work", LocationTag.STATUS_AT);
 				} else {
 					LOG.info("missing location");
 				}

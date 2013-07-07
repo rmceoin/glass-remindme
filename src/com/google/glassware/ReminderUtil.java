@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.services.mirror.model.Location;
 import com.google.api.services.mirror.model.NotificationConfig;
 import com.google.api.services.mirror.model.TimelineItem;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -95,11 +96,27 @@ public class ReminderUtil {
 		return reminders;
 	}
 	
-	public static void sendReminder(Credential credential, Reminder reminder) throws IOException {
+	public static void sendReminder(Credential credential, Reminder reminder, Location location) throws IOException {
 		// send the reminder
 		TimelineItem reminderItem = new TimelineItem();
 		reminderItem.setTitle(MainServlet.CONTACT_NAME);
-		reminderItem.setText("Now that you are at "+reminder.getTag()+", remember to "+reminder.getReminder()+".");
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("<article>");
+		builder.append("<section>\n");
+		builder.append("<p class=\"text-auto-size\">");
+		builder.append("At <b>"+reminder.getTag()+"</b>, remember to <b>"+reminder.getReminder()+"</b>.");
+		builder.append("</p>\n");
+		builder.append("</section>\n");
+		builder.append("<footer>");
+		builder.append("<div>");
+		builder.append(MainServlet.CONTACT_NAME);
+		builder.append("</div>");
+		builder.append("</footer>\n");
+		builder.append("</article>");
+
+		reminderItem.setHtml(builder.toString());
+		
 		reminderItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
 		MirrorClient.insertTimelineItem(credential, reminderItem);
 	}
