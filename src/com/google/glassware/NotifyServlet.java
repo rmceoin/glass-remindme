@@ -98,20 +98,12 @@ public class NotifyServlet extends HttpServlet {
 			Location location = glass.locations().get(notification.getItemId()).execute();
 
 			LOG.info("New location is " + location.getLatitude() + ", " + location.getLongitude());
-			Location previousLocation = LocationUtil.get(userId);
+//			Location previousLocation = LocationUtil.get(userId);
 			LocationUtil.save(userId, location);
 
-			LocationTag enteredTag = LocationUtil.enterTag(userId, previousLocation, location);
-			if (enteredTag != null) {
-				// sendMap(credential, userId, enteredTag.getLocation(),
-				// "You arrived at " + enteredTag.getTag());
-
-				List<Reminder> reminders = ReminderUtil.getAllReminders(userId, enteredTag.getTag());
-				if (reminders != null) {
-					for (Reminder reminder : reminders) {
-						ReminderUtil.sendReminder(credential, reminder, enteredTag.getLocation());
-					}
-				}
+			List<Reminder> reminders = LocationUtil.checkTags(userId, location);
+			for (Reminder reminder : reminders) {
+				ReminderUtil.sendReminder(credential, reminder);
 			}
 		} else if (notification.getCollection().equals("timeline")) {
 			// Get the impacted timeline item

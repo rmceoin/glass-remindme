@@ -164,23 +164,17 @@ public class LocationUtil {
 		return distanceInMeters;
 	}
 
-	public static LocationTag enterTag(String userId, Location previous, Location current) {
-		if ((previous == null) || (current == null)) {
-			LOG.info("previous or current was null");
-			return null;
-		}
+	public static List<Reminder> checkTags(String userId, Location current) {
 		List<LocationTag> locationTags = getAllTags(userId);
 		if (locationTags == null) {
 			// no tags for this user
 			LOG.info("no tags for this user");
 			return null;
 		}
-		// if (distanceBetweenLocations(previous, current) < 100) {
-		// LOG.info("not enough distance between previous and current");
-		// return null;
-		// }
+
 		LOG.info("size of locationTags=" + locationTags.size());
-		LocationTag foundLocationTag = null;
+		boolean foundLocationTag = false;
+		List<Reminder> reminders = new ArrayList<Reminder>();
 		for (LocationTag locationTag : locationTags) {
 
 			double tagDistanceFromCurrent = distanceBetweenLocations(locationTag.getLocation(), current);
@@ -190,28 +184,22 @@ public class LocationUtil {
 				// We are at the tag location and were previously away from it
 				LOG.info("arrived at " + locationTag.getTag());
 				saveTag(userId, locationTag.getLocation(), locationTag.getTag(), LocationTag.STATUS_AT);
-				foundLocationTag = locationTag;
+				List<Reminder> tagReminders = ReminderUtil.getAllReminders(userId, locationTag.getTag(), Reminder.DIRECTION_ARRIVE);
+				reminders.addAll(tagReminders);
+				foundLocationTag = true;
 			} else if ((tagDistanceFromCurrent > TAG_RADIUS) && ((status == null) || (!status.contentEquals(LocationTag.STATUS_AWAY)))) {
 				// We are away from the tag location and were previously at it
 				// ... we have left the tag location
 				LOG.info("left " + locationTag.getTag());
 				saveTag(userId, locationTag.getLocation(), locationTag.getTag(), LocationTag.STATUS_AWAY);
+				List<Reminder> tagReminders = ReminderUtil.getAllReminders(userId, locationTag.getTag(), Reminder.DIRECTION_DEPART);
+				reminders.addAll(tagReminders);
+				foundLocationTag = true;
 			}
-			/*
-			 * double
-			 * tagDistanceFromPrevious=distanceBetweenLocations(locationTag
-			 * .getLocation(), previous); LOG.info("previous from " +
-			 * locationTag.getTag() + ": " + tagDistanceFromPrevious);
-			 * LOG.info("current from " + locationTag.getTag() + ": " +
-			 * tagDistanceFromCurrent); if ((tagDistanceFromPrevious >
-			 * TAG_RADIUS) && (tagDistanceFromCurrent <= TAG_RADIUS)) {
-			 * LOG.info("matched tag location: " + locationTag.getTag()); return
-			 * locationTag; }
-			 */
 		}
-		if (foundLocationTag == null) {
+		if (foundLocationTag == false) {
 			LOG.info("no location found");
 		}
-		return foundLocationTag;
+		return reminders;
 	}
 }

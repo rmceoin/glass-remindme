@@ -30,7 +30,6 @@ import com.google.api.services.mirror.model.Subscription;
 import com.google.api.services.mirror.model.SubscriptionsListResponse;
 import com.google.api.services.mirror.model.TimelineItem;
 import com.google.api.services.mirror.model.TimelineListResponse;
-import com.google.api.services.oauth2.model.Userinfo;
 import com.google.common.io.ByteStreams;
 
 import java.io.IOException;
@@ -62,12 +61,6 @@ public class MirrorClient {
 			throws IOException {
 		Mirror.Contacts contacts = getMirror(credential).contacts();
 		contacts.delete(contactId).execute();
-	}
-
-	public static Userinfo getUserinfo(String id) throws IOException {
-		Userinfo userInfo = ListableAppEngineCredentialStore
-				.getStoredUserinfo(id);
-		return userInfo;
 	}
 
 	public static ContactsListResponse listContacts(Credential credential)

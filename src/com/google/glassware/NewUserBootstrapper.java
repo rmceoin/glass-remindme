@@ -18,14 +18,8 @@ package com.google.glassware;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.mirror.model.Subscription;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,21 +55,5 @@ public class NewUserBootstrapper {
 		}
 
 		RemindMeCard.insert(userId, credential, req);
-		
-//		NewUserInfo(userId, credential);
-
 	}
-
-	static void NewUserInfo(String userId, Credential credential) {
-		Key newsPostKey = KeyFactory.createKey("UserInfo", "dont know");
-		Date date = new Date();
-		Entity userinfo = new Entity("userinfo", newsPostKey);
-		userinfo.setProperty("created", date);
-		userinfo.setProperty("userId", userId);
-		userinfo.setProperty("accessToken", credential.getAccessToken());
-
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		datastore.put(userinfo);
-	}
-
 }

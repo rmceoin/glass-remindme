@@ -50,7 +50,7 @@ limitations under the License.
   <title>Glass RemindMe</title>
   <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet"
         media="screen">
-
+  <link href="/site.css" rel="stylesheet">
   <style>
     .button-icon {
       max-width: 75px;
@@ -115,12 +115,17 @@ limitations under the License.
         <button class="btn" type="submit">Insert Remind Me card</button></p>
       </form>
       
-      <p>To set a reminder, use the card and REPLY to it by saying a 
+      <p>To set a reminder, use the card on Glass and REPLY to it by saying a 
       sentence in the following format:</p>
       
-      <pre>remind me to "do something" at "home"</pre>
+      <pre>remind me to "do something" at "home"
+remind me to "do something" when i get [home]
+remind me to "do something" when i get to [work]</pre>
+
       <pre>remind me to "do something" when i leave "work"</pre>
 
+	  <p>Currently the Mirror API only sends your location to Glassware every 10 minutes.  This means it can take up to 10 minutes until you receive the reminder.</p>
+	  
 	  <h2>Reminders</h2>
 	  
 	  <table class="table">
@@ -177,6 +182,17 @@ limitations under the License.
 
   </div>
 </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p>Written by Randy McEoin <a href="//plus.google.com/100846733724962082125?prsrc=3"
+   rel="publisher" target="_top" style="text-decoration:none;">
+<img src="//ssl.gstatic.com/images/icons/gplus-16.png" alt="Google+" style="border:0;width:16px;height:16px;"/>
+</a></p>
+        <p>Code licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>..</p>
+        <p><a href="http://glyphicons.com">Glyphicons Free</a> licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+      </div>
+    </footer>
 
 <script
     src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

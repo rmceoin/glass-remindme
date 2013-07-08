@@ -37,7 +37,7 @@ limitations under the License.
   <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet"
         media="screen">
         
-  <link href="/site/site.css" rel="stylesheet">
+  <link href="site.css" rel="stylesheet">
   <style>
     .button-icon {
       max-width: 75px;
@@ -92,17 +92,31 @@ limitations under the License.
         this card to set your Home and Work locations.
         Be sure to pin the card so it's readily accessible.</p>
 
-      <p><img src="/static/images/remindme-card-example.png" width="640" height="360"></p>
+      <p class="text-center"><img src="/static/images/at-home-example.png" width="640" height="360"></p>
+      
+      <p class="text-center"><img src="/static/images/remindme-card-example.png" width="640" height="360"></p>
 
-      <p><img src="/static/images/at-work-example.png" width="640" height="360"></p>
+      <p class="text-center"><img src="/static/images/at-work-example.png" width="640" height="360"></p>
       
       <hr>
       
       <p>Upon arrival home, your Glass will be sent the reminder you had told it earlier.</p>
       
-      <p><img src="/static/images/home-reminder-example.png" width="640" height="360"></p>
+      <p class="text-center"><img src="/static/images/home-reminder-example.png" width="640" height="360"></p>
   
+	  <p>Currently the Mirror API only sends your location to Glassware every 10 minutes.  This means it can take up to 10 minutes until you receive the reminder.</p> 
 </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p>Written by Randy McEoin <a href="//plus.google.com/100846733724962082125?prsrc=3"
+   rel="publisher" target="_top" style="text-decoration:none;">
+<img src="//ssl.gstatic.com/images/icons/gplus-16.png" alt="Google+" style="border:0;width:16px;height:16px;"/>
+</a></p>
+        <p>Code licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>..</p>
+        <p><a href="http://glyphicons.com">Glyphicons Free</a> licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+      </div>
+    </footer>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="/static/bootstrap/js/bootstrap.min.js"></script>

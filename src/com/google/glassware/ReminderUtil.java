@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.services.mirror.model.Location;
 import com.google.api.services.mirror.model.NotificationConfig;
 import com.google.api.services.mirror.model.TimelineItem;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -77,6 +76,30 @@ public class ReminderUtil {
 		return reminders;
 	}
 
+	public static List<Reminder> getAllReminders(String userId, String tag, String direction) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+		Filter tagFilter = new FilterPredicate("tag", FilterOperator.EQUAL, tag);
+		Filter directionFilter = new FilterPredicate("direction", FilterOperator.EQUAL, direction);
+		Query reminderQuery = new Query(REMINDERS).setFilter(userIdFilter).setFilter(tagFilter).setFilter(directionFilter);
+		Iterable<Entity> reminderEntities = datastore.prepare(reminderQuery).asIterable();
+
+		List<Reminder> reminders = new ArrayList<Reminder>();
+		for (Entity reminderEntity : reminderEntities) {
+			LOG.info("found: " + userId + " " + reminderEntity.getProperty("tag"));
+			Reminder reminder = new Reminder();
+			reminder.setUserId(userId);
+			reminder.setTag(tag);
+			reminder.setCreated((Date) reminderEntity.getProperty("created"));
+			reminder.setReminder((String) reminderEntity.getProperty("reminder"));
+			reminder.setDirection((String) reminderEntity.getProperty("direction"));
+
+			reminders.add(reminder);
+		}
+		return reminders;
+	}
+
 	public static List<Reminder> getAllReminders(String userId) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
@@ -99,7 +122,7 @@ public class ReminderUtil {
 		return reminders;
 	}
 	
-	public static void sendReminder(Credential credential, Reminder reminder, Location location) throws IOException {
+	public static void sendReminder(Credential credential, Reminder reminder) throws IOException {
 		// send the reminder
 		TimelineItem reminderItem = new TimelineItem();
 		reminderItem.setTitle(MainServlet.CONTACT_NAME);
