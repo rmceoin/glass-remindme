@@ -53,6 +53,7 @@ public class RemindMeCard {
 				if (timelineItem.getId().equals(oldCardId)) {
 					// found the old card is still in the timeline
 					timelineItem.setIsPinned(true);
+					timelineItem.setHtml(cardHTML(userId));
 					TimelineItem cardUpdated=MirrorClient.updateTimelineItem(credential, oldCardId, timelineItem);
 					LOG.info("found old card and updated it: "+timelineItem+" "+cardUpdated);
 					return;
@@ -61,7 +62,7 @@ public class RemindMeCard {
 		}
 		TimelineItem timelineItem = new TimelineItem();
 		timelineItem.setTitle(MainServlet.CONTACT_NAME);
-		timelineItem.setText("Remind Me");
+		timelineItem.setHtml(cardHTML(userId));
 
 		List<MenuItem> menuItemList = new ArrayList<MenuItem>();
 		menuItemList.add(new MenuItem().setAction("REPLY"));
@@ -93,6 +94,44 @@ public class RemindMeCard {
 		saveCard(userId, cardInserted);
 	}
 
+	private static String cardHTML(String userId) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("<article>");
+		builder.append("<section>\n");
+		
+		List<LocationTag> locationTags = LocationUtil.getAllTags(userId);
+		if ((locationTags != null) && (locationTags.size()>0)) {
+
+			List<Reminder> reminders=ReminderUtil.getAllReminders(userId);
+			if ((reminders!=null) && (reminders.size()>0)) {
+				builder.append("<table>");
+				for (Reminder reminder : reminders) {
+					builder.append("<tr>");
+					builder.append("<td>"+reminder.getTag()+"</td>");
+					builder.append("<td>"+reminder.getReminder()+"</td>");
+					builder.append("<tr>\n");
+				}
+				builder.append("</table>");
+			} else {
+				builder.append("<p>Reply to this card with a command like this:</p>");
+				builder.append("<p>remind me to [do something] at [home]</p>");
+			}
+			
+		} else {
+			builder.append("<p>Use the 'At Home' and 'At Work' menu commands to set a location.</p>");
+		}
+			
+
+		builder.append("</section>\n");
+		builder.append("<footer>");
+		builder.append("<div>");
+		builder.append(MainServlet.CONTACT_NAME);
+		builder.append("</div>");
+		builder.append("</footer>\n");
+		builder.append("</article>");
+		
+		return builder.toString();
+	}
 	public static void saveCard(String userId, TimelineItem card) {
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

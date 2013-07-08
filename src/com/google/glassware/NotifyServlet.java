@@ -144,6 +144,7 @@ public class NotifyServlet extends HttpServlet {
 				if (location != null) {
 					LOG.info("got location");
 					LocationUtil.saveTag(userId, location, "home", LocationTag.STATUS_AT);
+					RemindMeCard.insert(userId, credential, request);
 				} else {
 					LOG.info("missing location");
 					checkLocationSubscription(credential, userId, request);
@@ -155,6 +156,7 @@ public class NotifyServlet extends HttpServlet {
 				if (location != null) {
 					LOG.info("got location");
 					LocationUtil.saveTag(userId, location, "work", LocationTag.STATUS_AT);
+					RemindMeCard.insert(userId, credential, request);
 				} else {
 					LOG.info("missing location");
 				}

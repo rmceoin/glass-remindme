@@ -43,13 +43,7 @@ limitations under the License.
   List<TimelineItem> timelineItems = MirrorClient.listItems(credential, 3L).getItems();
 
   Location locationHome = LocationUtil.getTag(userId, "home");
-  if (locationHome==null) {
-    locationHome = new Location();
-  }
   Location locationWork = LocationUtil.getTag(userId, "work");
-  if (locationWork==null) {
-    locationWork = new Location();
-  }
 
 
 %>
@@ -86,8 +80,12 @@ limitations under the License.
     <script type="text/javascript" src="/locationtags.js"></script>
     <script type="text/javascript">
       function initialize() {
+      <% if (locationHome!=null) { %>
 	      initmap(<%= locationHome.getLatitude() %>, <%= locationHome.getLongitude() %>, "Home", "map-canvas-home");
+	  <% }
+	  	 if (locationWork!=null) { %>
 	      initmap(<%= locationWork.getLatitude() %>, <%= locationWork.getLongitude() %>, "Home", "map-canvas-work");
+	  <% } %>
       }
       google.maps.event.addDomListener(window, 'load', initialize);
     </script>
@@ -152,19 +150,19 @@ limitations under the License.
     <div class="span4">
       <h2>Location Tags</h2>
 
-      <% if (locationHome!=null) { %>
-      	<h3>Home</h3>
-      <% } else { %>
+	   	<h3>Home</h3>
+      <% if (locationHome==null) { %>
         <p>No home set</p>
-      <% } %>
-      <div id="map-canvas-home"></div>
-
-      <% if (locationWork!=null) { %>
-      	<h3>Work</h3>
       <% } else { %>
-        <p>No work set</p>
+        <div id="map-canvas-home"></div>
       <% } %>
-      <div id="map-canvas-work"></div>
+
+      	<h3>Work</h3>
+      <% if (locationWork==null) { %>
+        <p>No work set</p>
+      <% } else { %>
+        <div id="map-canvas-work"></div>
+      <% } %>
 
     </div>
 
