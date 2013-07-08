@@ -39,7 +39,7 @@ public class ReminderUtil {
 	private static final String KIND = ReminderUtil.class.getName();
 	private static final String REMINDERS = KIND + ".reminders";
 	
-	public static void saveReminder(String userId, String tag, String reminder) {
+	public static void saveReminder(String userId, String tag, String reminder, String direction) {
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Entity entity = new Entity(REMINDERS);
@@ -48,6 +48,7 @@ public class ReminderUtil {
 		entity.setProperty("created", date); // GMT
 		entity.setProperty("tag", tag);
 		entity.setProperty("reminder", reminder);
+		entity.setProperty("direction", direction);
 
 		datastore.put(entity);
 		LOG.info("Saved reminder for " + userId + " tag " + tag);
@@ -69,6 +70,7 @@ public class ReminderUtil {
 			reminder.setTag(tag);
 			reminder.setCreated((Date) reminderEntity.getProperty("created"));
 			reminder.setReminder((String) reminderEntity.getProperty("reminder"));
+			reminder.setDirection((String) reminderEntity.getProperty("direction"));
 
 			reminders.add(reminder);
 		}
@@ -90,6 +92,7 @@ public class ReminderUtil {
 			reminder.setTag((String) reminderEntity.getProperty("tag"));
 			reminder.setCreated((Date) reminderEntity.getProperty("created"));
 			reminder.setReminder((String) reminderEntity.getProperty("reminder"));
+			reminder.setDirection((String) reminderEntity.getProperty("direction"));
 
 			reminders.add(reminder);
 		}
@@ -105,7 +108,12 @@ public class ReminderUtil {
 		builder.append("<article>");
 		builder.append("<section>\n");
 		builder.append("<p class=\"text-auto-size\">");
-		builder.append("At <b>"+reminder.getTag()+"</b>, remember to <b>"+reminder.getReminder()+"</b>.");
+		if (reminder.getReminder().contentEquals(Reminder.DIRECTION_ARRIVE)) {
+			builder.append("At ");
+		} else {
+			builder.append("Left ");
+		}
+		builder.append("<b>"+reminder.getTag()+"</b>, remember to <b>"+reminder.getReminder()+"</b>.");
 		builder.append("</p>\n");
 		builder.append("</section>\n");
 		builder.append("<footer>");

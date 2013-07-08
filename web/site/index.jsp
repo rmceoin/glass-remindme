@@ -18,10 +18,10 @@ limitations under the License.
 <%@ page import="com.google.glassware.MirrorClient" %>
 <%@ page import="com.google.glassware.WebUtil" %>
 <%@ page import="com.google.glassware.LocationUtil" %>
+<%@ page import="com.google.glassware.LocationTag" %>
 <%@ page import="com.google.glassware.Reminder" %>
 <%@ page import="com.google.glassware.ReminderUtil" %>
-<%@ page
-    import="java.util.List" %>
+<%@ page import="java.util.List" %>
 <%@ page import="com.google.api.services.mirror.model.TimelineItem" %>
 <%@ page import="com.google.api.services.mirror.model.Subscription" %>
 <%@ page import="com.google.api.services.mirror.model.Attachment" %>
@@ -42,8 +42,8 @@ limitations under the License.
 
   List<TimelineItem> timelineItems = MirrorClient.listItems(credential, 3L).getItems();
 
-  Location locationHome = LocationUtil.getTag(userId, "home");
-  Location locationWork = LocationUtil.getTag(userId, "work");
+  LocationTag locationHome = LocationUtil.getTag(userId, "home");
+  LocationTag locationWork = LocationUtil.getTag(userId, "work");
 
 
 %>
@@ -65,9 +65,6 @@ limitations under the License.
       list-style: none;
     }
 
-    .btn {
-      width: 100%;
-    }
  	#firstrow {
  		margin-top: 41px;
  	}
@@ -81,10 +78,10 @@ limitations under the License.
     <script type="text/javascript">
       function initialize() {
       <% if (locationHome!=null) { %>
-	      initmap(<%= locationHome.getLatitude() %>, <%= locationHome.getLongitude() %>, "Home", "map-canvas-home");
+	      initmap(<%= locationHome.getLocation().getLatitude() %>, <%= locationHome.getLocation().getLongitude() %>, "Home", "map-canvas-home");
 	  <% }
 	  	 if (locationWork!=null) { %>
-	      initmap(<%= locationWork.getLatitude() %>, <%= locationWork.getLongitude() %>, "Home", "map-canvas-work");
+	      initmap(<%= locationWork.getLocation().getLatitude() %>, <%= locationWork.getLocation().getLongitude() %>, "Work", "map-canvas-work");
 	  <% } %>
       }
       google.maps.event.addDomListener(window, 'load', initialize);
@@ -117,19 +114,24 @@ limitations under the License.
         Be sure to pin the card so it's readily accessible.</p>
 
       <form action="<%= WebUtil.buildUrl(request, "/main") %>" method="post">
-        <input type="hidden" name="operation" value="insertRemindMe">
-        <button class="btn" type="submit">Insert Remind Me card</button>
+        <p class="text-center"><input type="hidden" name="operation" value="insertRemindMe">
+        <button class="btn" type="submit">Insert Remind Me card</button></p>
       </form>
       
       <p>To set a reminder, use the card and REPLY to it by saying a 
       sentence in the following format:</p>
       
       <pre>remind me to "do something" at "home"</pre>
+      <pre>remind me to "do something" when i leave "work"</pre>
 
+	  <h2>Reminders</h2>
+	  
 	  <table class="table">
 		<tr>
-			<th> Tag </th>
 			<th> Reminder </th>
+			<th></th>
+			<th> Tag </th>
+			<th></th>
 			<th> Created </th>
 		</tr>
 	  <%
@@ -137,8 +139,18 @@ limitations under the License.
 		if (reminders!=null) {
 			for (Reminder reminder : reminders) { %>
 			<tr>
-				<td> <%= reminder.getTag() %> </td>
 				<td> <%= reminder.getReminder() %> </td>
+				<td>
+				<% if (reminder.getDirection().contentEquals(Reminder.DIRECTION_ARRIVE)) { %>
+					<i class="icon-arrow-right"></i>
+				<% } %>
+				</td>
+				<td> <%= reminder.getTag() %> </td>
+				<td>
+				<% if (reminder.getDirection().contentEquals(Reminder.DIRECTION_DEPART)) { %>
+					<i class="icon-arrow-right"></i>
+				<% } %>
+				</td>
 				<td> <%= reminder.getCreated() %> </td>
 			</tr>
 		<%	}
@@ -167,51 +179,6 @@ limitations under the License.
     </div>
 
   </div>
-  
-    <!-- Main hero unit for a primary marketing message or call to action -->
-  <div id="timeline" class="hero-unit">
-    <h1><%= userInfo.getGivenName() %>'s Recent Timeline</h1>
-    <% String flash = WebUtil.getClearFlash(request);
-      if (flash != null) { %>
-    <span class="label label-warning">Message: <%= flash %> </span>
-    <% } %>
-
-    <div style="margin-top: 5px;">
-
-      <% if (timelineItems != null) {
-        for (TimelineItem timelineItem : timelineItems) { %>
-      <ul class="span3 tile">
-        <li><strong>ID: </strong> <%= timelineItem.getId() %>
-        </li>
-        <li>
-          <strong>Text: </strong> <%= timelineItem.getText() %>
-        </li>
-        <li>
-          <strong>HTML: </strong> <%= timelineItem.getHtml() %>
-        </li>
-        <li>
-          <strong>Attachments: </strong>
-          <%
-          if (timelineItem.getAttachments() != null) {
-            for (Attachment attachment : timelineItem.getAttachments()) {
-              if (MirrorClient.getAttachmentContentType(credential, timelineItem.getId(), attachment.getId()).startsWith("image")) { %>
-          <img src="<%= appBaseUrl + "attachmentproxy?attachment=" +
-            attachment.getId() + "&timelineItem=" + timelineItem.getId() %>">
-          <% } else { %>
-          <a href="<%= appBaseUrl + "attachmentproxy?attachment=" +
-            attachment.getId() + "&timelineItem=" + timelineItem.getId() %>">Download</a>
-          <% }
-            }
-          } %>
-        </li>
-
-      </ul>
-      <% }
-      } %>
-    </div>
-    <div style="clear:both;"></div>
-  </div>
-  
 </div>
 
 <script

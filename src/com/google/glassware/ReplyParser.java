@@ -20,20 +20,37 @@ import java.util.regex.Pattern;
 import java.util.logging.Logger;
 
 public class ReplyParser {
-	private static final Logger LOG = Logger.getLogger(MainServlet.class.getSimpleName());
+	private static final Logger LOG = Logger.getLogger(ReplyParser.class.getSimpleName());
 
-	public static void parse(String userId, String reply) {
+	/**
+	 * @param userId
+	 * @param reply
+	 * @return true if matched the reply string
+	 */
+	public static boolean parse(String userId, String reply) {
 		// remind me to [do something] at [home]
 		// remind me to [do something] when i get [home]
 		// remind me to [do something] when i get to [work]
-		Pattern pattern = Pattern.compile("^remind me to (.*) (at|when i get|when i get to) ([a-z]+)$");
+		Pattern pattern = Pattern.compile("^remind me to (.*) (at|when i get|when i get to) ([a-z]+)$", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(reply);
 		if (matcher.find()) {
 			String reminder = matcher.group(1);
 			String middle = matcher.group(2);
 			String tag = matcher.group(3);
 			LOG.info("matched: " + reminder + " - " + middle + " - " + tag);
-			ReminderUtil.saveReminder(userId, tag, reminder);
+			ReminderUtil.saveReminder(userId, tag, reminder, Reminder.DIRECTION_ARRIVE);
+			return true;
 		}
+		pattern = Pattern.compile("^remind me to (.*) (when i leave) ([a-z]+)$", Pattern.CASE_INSENSITIVE);
+		matcher = pattern.matcher(reply);
+		if (matcher.find()) {
+			String reminder = matcher.group(1);
+			String middle = matcher.group(2);
+			String tag = matcher.group(3);
+			LOG.info("matched: " + reminder + " - " + middle + " - " + tag);
+			ReminderUtil.saveReminder(userId, tag, reminder, Reminder.DIRECTION_DEPART);
+			return true;
+		}
+		return false;
 	}
 }

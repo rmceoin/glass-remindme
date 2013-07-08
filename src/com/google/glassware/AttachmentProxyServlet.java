@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
  * 
  * @author Jenny Murphy - http://google.com/+JennyMurphy
  */
+@SuppressWarnings("serial")
 public class AttachmentProxyServlet extends HttpServlet {
   private static final Logger LOG = Logger.getLogger(AttachmentProxyServlet.class.getSimpleName());
 

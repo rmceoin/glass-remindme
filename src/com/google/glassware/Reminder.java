@@ -18,6 +18,9 @@ package com.google.glassware;
 import java.util.Date;
 
 public class Reminder {
+	public final static String DIRECTION_ARRIVE = "arrive";
+	public final static String DIRECTION_DEPART = "depart";
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -42,9 +45,16 @@ public class Reminder {
 	public void setReminder(String reminder) {
 		this.reminder = reminder;
 	}
+	public String getDirection() {
+		return direction;
+	}
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
 
 	private String userId;
 	private Date created;
 	private String tag;
 	private String reminder;
+	private String direction;
 }

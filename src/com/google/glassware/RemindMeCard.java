@@ -49,7 +49,7 @@ public class RemindMeCard {
 			List<TimelineItem> timelineItems = MirrorClient.listItems(credential, 200L).getItems();
 			LOG.info("timeline has "+timelineItems.size());
 			for (TimelineItem timelineItem : timelineItems) {
-				LOG.info(" id "+timelineItem.getId());
+//				LOG.info(" id "+timelineItem.getId());
 				if (timelineItem.getId().equals(oldCardId)) {
 					// found the old card is still in the timeline
 					timelineItem.setIsPinned(true);

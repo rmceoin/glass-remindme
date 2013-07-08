@@ -50,7 +50,8 @@ public class NotifyServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// Respond with OK and status 200 in a timely fashion to prevent redelivery
+		// Respond with OK and status 200 in a timely fashion to prevent
+		// redelivery
 		response.setContentType("text/html");
 		Writer writer = response.getWriter();
 		writer.append("OK");
@@ -102,10 +103,11 @@ public class NotifyServlet extends HttpServlet {
 
 			LocationTag enteredTag = LocationUtil.enterTag(userId, previousLocation, location);
 			if (enteredTag != null) {
-//				sendMap(credential, userId, enteredTag.getLocation(), "You arrived at " + enteredTag.getTag());
-				
-				List<Reminder> reminders=ReminderUtil.getAllReminders(userId, enteredTag.getTag());
-				if (reminders!=null) {
+				// sendMap(credential, userId, enteredTag.getLocation(),
+				// "You arrived at " + enteredTag.getTag());
+
+				List<Reminder> reminders = ReminderUtil.getAllReminders(userId, enteredTag.getTag());
+				if (reminders != null) {
 					for (Reminder reminder : reminders) {
 						ReminderUtil.sendReminder(credential, reminder, enteredTag.getLocation());
 					}
@@ -161,20 +163,22 @@ public class NotifyServlet extends HttpServlet {
 					LOG.info("missing location");
 				}
 			} else if (notification.getUserActions().contains(new UserAction().setType("CUSTOM").setPayload("showhome"))) {
-				Location location = LocationUtil.getTag(userId, "home");
-				if (location != null) {
+				LocationTag locationTag = LocationUtil.getTag(userId, "home");
+				if (locationTag != null) {
 					LOG.info("show home got location");
-					sendMap(credential, userId, location, "Home");
+					sendMap(credential, userId, locationTag.getLocation(), "Home");
 				}
 			} else if (notification.getUserActions().contains(new UserAction().setType("CUSTOM").setPayload("showwork"))) {
-				Location location = LocationUtil.getTag(userId, "work");
-				if (location != null) {
+				LocationTag locationTag = LocationUtil.getTag(userId, "work");
+				if (locationTag != null) {
 					LOG.info("show work got location");
-					sendMap(credential, userId, location, "Work");
+					sendMap(credential, userId, locationTag.getLocation(), "Work");
 				}
 			} else if (notification.getUserActions().contains(new UserAction().setType("REPLY"))) {
 				LOG.info("got a REPLY: " + timelineItem.getText());
-				ReplyParser.parse(userId, timelineItem.getText());
+				if (!ReplyParser.parse(userId, timelineItem.getText())) {
+					sendSorryCard(credential, timelineItem.getText());
+				}
 			} else {
 				LOG.warning("I don't know what to do with this notification, so I'm ignoring it." + notification.getUserActions());
 			}
@@ -211,6 +215,28 @@ public class NotifyServlet extends HttpServlet {
 		}
 	}
 
+	private void sendSorryCard(Credential credential, String message) throws IOException {
+		TimelineItem timelineItem = new TimelineItem();
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("<article>\n");
+		builder.append("<section>\n");
+		builder.append("<p>Sorry, did not understand:</p>");
+		builder.append("<p>" + message + "</p>");
+		builder.append("</section>\n");
+		builder.append("<footer>");
+		builder.append("<div>");
+		builder.append(MainServlet.CONTACT_NAME);
+		builder.append("</div>");
+		builder.append("</footer>\n");
+		builder.append("</article>");
+
+		timelineItem.setHtml(builder.toString());
+		timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
+
+		MirrorClient.insertTimelineItem(credential, timelineItem);
+	}
+
 	private void sendMap(Credential credential, String userId, Location location, String name) throws IOException {
 
 		TimelineItem locationMap = new TimelineItem();
@@ -231,7 +257,7 @@ public class NotifyServlet extends HttpServlet {
 		builder.append("</section>\n");
 		builder.append("<footer>");
 		builder.append("<div>");
-		builder.append("Glass RemindMe");
+		builder.append(MainServlet.CONTACT_NAME);
 		builder.append("</div>");
 		builder.append("</footer>\n");
 		builder.append("</article>");

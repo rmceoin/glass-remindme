@@ -5,6 +5,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
@@ -50,22 +51,6 @@ public class LocationUtil {
 		LOG.info("Saved location for " + userId);
 	}
 
-	public static void saveTag(String userId, Location location, String tag, String status) {
-
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Entity entity = new Entity(LOCATION_TAGS, userId + tag);
-		entity.setProperty("userId", userId);
-		entity.setProperty("latitude", location.getLatitude());
-		entity.setProperty("longitude", location.getLongitude());
-		Date date = new Date();
-		entity.setProperty("date", date); // GMT
-		entity.setProperty("tag", tag);
-		entity.setProperty("status", status);
-
-		datastore.put(entity);
-		LOG.info("Saved location for " + userId + " tag " + tag);
-	}
-
 	public static Location get(String userId) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Key key = KeyFactory.createKey(LOCATION_CURRENT, userId);
@@ -94,18 +79,54 @@ public class LocationUtil {
 		}
 	}
 
-	public static Location getTag(String userId, String tag) {
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Key key = KeyFactory.createKey(LOCATION_TAGS, userId + tag);
+	public static void saveTag(String userId, Location location, String tag, String status) {
 
-		try {
-			Entity entity = datastore.get(key);
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Entity entity = new Entity(LOCATION_TAGS);
+
+		Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+		Filter tagFilter = new FilterPredicate("tag", FilterOperator.EQUAL, tag);
+		Query tagQuery = new Query(LOCATION_TAGS).setFilter(userIdFilter).setFilter(tagFilter);
+		List<Entity> tagEntities = datastore.prepare(tagQuery).asList(FetchOptions.Builder.withLimit(1));
+
+		if (tagEntities.size()>0) {
+			entity = tagEntities.get(0);
+		}
+		
+		entity.setProperty("userId", userId);
+		entity.setProperty("latitude", location.getLatitude());
+		entity.setProperty("longitude", location.getLongitude());
+		Date date = new Date();
+		entity.setProperty("date", date); // GMT
+		entity.setProperty("tag", tag);
+		entity.setProperty("status", status);
+
+		datastore.put(entity);
+		LOG.info("Saved location for " + userId + " tag " + tag);
+	}
+
+	public static LocationTag getTag(String userId, String tag) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
+		Filter tagFilter = new FilterPredicate("tag", FilterOperator.EQUAL, tag);
+		Query tagQuery = new Query(LOCATION_TAGS).setFilter(userIdFilter).setFilter(tagFilter);
+		List<Entity> tagEntities = datastore.prepare(tagQuery).asList(FetchOptions.Builder.withLimit(1));
+
+		if (tagEntities.size()>0) {
+			Entity entity = tagEntities.get(0);
 
 			Location location = new Location();
 			location.setLatitude((Double) entity.getProperty("latitude"));
 			location.setLongitude((Double) entity.getProperty("longitude"));
-			return location;
-		} catch (EntityNotFoundException e) {
+
+			LocationTag locationTag = new LocationTag();
+			locationTag.setUserId(userId);
+			locationTag.setLocation(location);
+			locationTag.setTag((String) entity.getProperty("tag"));
+			locationTag.setStatus((String) entity.getProperty("status"));
+			return locationTag;
+		} else {
 			return null;
 		}
 
