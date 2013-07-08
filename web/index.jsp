@@ -92,6 +92,8 @@ limitations under the License.
         this card to set your Home and Work locations.
         Be sure to pin the card so it's readily accessible.</p>
 
+      <p><img src="/static/images/remindme-card-example.png" width="640" height="360"></p>
+
       <p><img src="/static/images/at-work-example.png" width="640" height="360"></p>
       
       <hr>

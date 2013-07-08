@@ -34,6 +34,7 @@ import com.google.api.services.oauth2.Oauth2;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A new credential store for App Engine. It's exactly the same as
@@ -44,6 +45,8 @@ import java.util.List;
  * @author Jenny Murphy - http://google.com/+JennyMurphy
  */
 public class ListableAppEngineCredentialStore implements CredentialStore {
+	private static final Logger LOG = Logger.getLogger(ListableAppEngineCredentialStore.class.getSimpleName());
+
 	/**
 	 * Be sure to specify the name of your application. If the application name
 	 * is {@code null} or blank, the application will log a warning. Suggested
@@ -77,25 +80,6 @@ public class ListableAppEngineCredentialStore implements CredentialStore {
 	@Override
 	public void store(String userId, Credential credential) {
 
-		Userinfo userInfo = null;
-		String userFamilyName=null;
-		String userGivenName=null;
-		String userName=null;
-		String userPicture=null;
-		String userTimezone=null;
-		try {
-			userInfo = getUserInfo(credential);
-			userFamilyName=userInfo.getFamilyName();
-			userGivenName=userInfo.getGivenName();
-			userName=userInfo.getName();
-			userPicture=userInfo.getPicture();
-			userTimezone=userInfo.getTimezone();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.err.println("An error occurred: " + e);
-			userInfo = null;
-		}
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		Entity entity = new Entity(KIND, userId);
@@ -103,11 +87,6 @@ public class ListableAppEngineCredentialStore implements CredentialStore {
 		entity.setProperty("refreshToken", credential.getRefreshToken());
 		entity.setProperty("expirationTimeMillis",
 				credential.getExpirationTimeMilliseconds());
-		entity.setProperty("userFamilyName", userFamilyName);
-		entity.setProperty("userGivenName", userGivenName);
-		entity.setProperty("userName", userName);
-		entity.setProperty("userPicture", userPicture);
-		entity.setProperty("userTimezone", userTimezone);
 		datastore.put(entity);
 	}
 
@@ -138,25 +117,6 @@ public class ListableAppEngineCredentialStore implements CredentialStore {
 		}
 	}
 
-	public static Userinfo getStoredUserinfo(String userId) {
-		DatastoreService datastore = DatastoreServiceFactory
-				.getDatastoreService();
-		Key key = KeyFactory.createKey(KIND, userId);
-		try {
-			Entity entity = datastore.get(key);
-			Userinfo userInfo=new Userinfo();
-            userInfo.setFamilyName((String) entity.getProperty("userFamilyName"));
-            userInfo.setGivenName((String) entity.getProperty("userGivenName"));
-            userInfo.setName((String) entity.getProperty("userName"));
-            userInfo.setPicture((String) entity.getProperty("userPicture"));
-            userInfo.setTimezone((String) entity.getProperty("userTimezone"));
-
-			return userInfo;
-		} catch (EntityNotFoundException exception) {
-			return null;
-		}
-	}
-
 	/**
 	 * Send a request to the UserInfo API to retrieve the user's information.
 	 * 
@@ -175,6 +135,7 @@ public class ListableAppEngineCredentialStore implements CredentialStore {
 			userInfo = oauth2.userinfo().get().execute();
 		} catch (IOException e) {
 			System.err.println("An error occurred: " + e);
+			LOG.info("getUserInfo error: "+e.getLocalizedMessage());
 		}
 		if (userInfo != null && userInfo.getId() != null) {
 			return userInfo;

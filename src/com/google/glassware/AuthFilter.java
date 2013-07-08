@@ -38,6 +38,7 @@ public class AuthFilter implements Filter {
 
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
       throws IOException, ServletException {
+
     if (response instanceof HttpServletResponse && request instanceof HttpServletRequest) {
       HttpServletRequest httpRequest = (HttpServletRequest) request;
       HttpServletResponse httpResponse = (HttpServletResponse) response;

@@ -38,9 +38,6 @@ limitations under the License.
   String appBaseUrl = WebUtil.buildUrl(request, "/");
 
   Credential credential = com.google.glassware.AuthUtil.getCredential(userId);
-  Userinfo userInfo = MirrorClient.getUserinfo(userId);
-
-  List<TimelineItem> timelineItems = MirrorClient.listItems(credential, 3L).getItems();
 
   LocationTag locationHome = LocationUtil.getTag(userId, "home");
   LocationTag locationWork = LocationUtil.getTag(userId, "work");

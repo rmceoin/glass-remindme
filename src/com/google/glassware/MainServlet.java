@@ -71,9 +71,13 @@ public class MainServlet extends HttpServlet {
 		} else if (req.getParameter("operation").equals("insertRemindMe")) {
 			LOG.fine("Inserting Remind Me");
 
-			RemindMeCard.insert(userId, credential, req);
+			try {
+				RemindMeCard.insert(userId, credential, req);
+			} catch (GoogleJsonResponseException e) {
+				LOG.warning("error inserting RemindMe: " + e.getDetails().getErrors());
+			}
 
-			message = "Insert a Set Location card.";
+			message = "Insert a RemindMe card.";
 
 		} else if (req.getParameter("operation").equals("insertContact")) {
 			if (req.getParameter("iconUrl") == null || req.getParameter("name") == null) {
@@ -106,6 +110,5 @@ public class MainServlet extends HttpServlet {
 		WebUtil.setFlash(req, message);
 		res.sendRedirect(WebUtil.buildUrl(req, "/site"));
 	}
-
 
 }
