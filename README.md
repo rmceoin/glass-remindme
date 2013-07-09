@@ -1,4 +1,4 @@
-Glass Remind Me
+Glass RemindMe
 ========================
 
 Use Google Glass to remind you to do things based on your location.

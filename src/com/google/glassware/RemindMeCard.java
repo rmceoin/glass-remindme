@@ -41,7 +41,7 @@ public class RemindMeCard {
 	private static final String KIND = RemindMeCard.class.getName();
 	private static final String REMINDMECARDS = KIND + ".cards";
 	
-	public static void insert(String userId, Credential credential, HttpServletRequest req) throws IOException {
+	public static void insert(String userId, Credential credential, HttpServletRequest req, boolean notify) throws IOException {
 		
 		String oldCardId=getCardId(userId);
 		if (oldCardId!=null) {
@@ -52,8 +52,12 @@ public class RemindMeCard {
 //				LOG.info(" id "+timelineItem.getId());
 				if (timelineItem.getId().equals(oldCardId)) {
 					// found the old card is still in the timeline
-					timelineItem.setIsPinned(true);
 					timelineItem.setHtml(cardHTML(userId));
+					if (notify) {
+						timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
+					} else {
+						timelineItem.setNotification(new NotificationConfig().setLevel(null));
+					}
 					TimelineItem cardUpdated=MirrorClient.updateTimelineItem(credential, oldCardId, timelineItem);
 					LOG.info("found old card and updated it: "+timelineItem+" "+cardUpdated);
 					return;
@@ -87,7 +91,11 @@ public class RemindMeCard {
 		menuItemList.add(new MenuItem().setAction("DELETE"));
 
 		timelineItem.setMenuItems(menuItemList);
-		timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
+		if (notify) {
+			timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
+		} else {
+			timelineItem.setNotification(new NotificationConfig().setLevel(null));
+		}
 		timelineItem.setIsPinned(true);
 
 		TimelineItem cardInserted=MirrorClient.insertTimelineItem(credential, timelineItem);

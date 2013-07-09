@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2013 Randy McEoin
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.google.glassware;
 
 import com.google.api.services.mirror.model.Location;
@@ -164,6 +179,15 @@ public class LocationUtil {
 		return distanceInMeters;
 	}
 
+	/**
+	 * Check all the location tags to determine if userId entered or left.
+	 * If so, then update status on location tag and check if there are reminders
+	 * for that tag.
+	 * 
+	 * @param userId
+	 * @param current
+	 * @return List of reminders triggered
+	 */
 	public static List<Reminder> checkTags(String userId, Location current) {
 		List<LocationTag> locationTags = getAllTags(userId);
 		if (locationTags == null) {
@@ -198,7 +222,7 @@ public class LocationUtil {
 			}
 		}
 		if (foundLocationTag == false) {
-			LOG.info("no location found");
+			LOG.info("no LocationTags status updates");
 		}
 		return reminders;
 	}

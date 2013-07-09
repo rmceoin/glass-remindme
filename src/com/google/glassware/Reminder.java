@@ -17,6 +17,8 @@ package com.google.glassware;
 
 import java.util.Date;
 
+import com.google.appengine.api.datastore.Key;
+
 public class Reminder {
 	public final static String DIRECTION_ARRIVE = "arrive";
 	public final static String DIRECTION_DEPART = "depart";
@@ -51,10 +53,17 @@ public class Reminder {
 	public void setDirection(String direction) {
 		this.direction = direction;
 	}
+	public Key getKey() {
+		return key;
+	}
+	public void setKey(Key key) {
+		this.key = key;
+	}
 
 	private String userId;
 	private Date created;
 	private String tag;
 	private String reminder;
 	private String direction;
+	private Key key;
 }

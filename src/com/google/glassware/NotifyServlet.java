@@ -28,7 +28,6 @@ import com.google.api.services.mirror.model.UserAction;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.List;
@@ -99,38 +98,22 @@ public class NotifyServlet extends HttpServlet {
 
 			LOG.info("New location is " + location.getLatitude() + ", " + location.getLongitude());
 //			Location previousLocation = LocationUtil.get(userId);
-			LocationUtil.save(userId, location);
+//			LocationUtil.save(userId, location);
 
 			List<Reminder> reminders = LocationUtil.checkTags(userId, location);
-			for (Reminder reminder : reminders) {
-				ReminderUtil.sendReminder(credential, reminder);
+			if (reminders.size()>0) {
+				// update the RemindMe card so it doesn't list the reminder(s) we just sent
+				RemindMeCard.insert(userId, credential, request, false);
+				// now send all the reminders
+				for (Reminder reminder : reminders) {
+					ReminderUtil.sendReminder(credential, reminder);
+				}
 			}
 		} else if (notification.getCollection().equals("timeline")) {
 			// Get the impacted timeline item
 			TimelineItem timelineItem = mirrorClient.timeline().get(notification.getItemId()).execute();
 			LOG.info("Notification impacted timeline item with ID: " + timelineItem.getId());
 
-			// If it was a share, and contains a photo, bounce it back to the
-			// user.
-			if (notification.getUserActions().contains(new UserAction().setType("SHARE")) && timelineItem.getAttachments() != null
-					&& timelineItem.getAttachments().size() > 0) {
-				LOG.info("It was a share of a photo. Sending the photo back to the user.");
-
-				// Get the first attachment
-				String attachmentId = timelineItem.getAttachments().get(0).getId();
-				LOG.info("Found attachment with ID " + attachmentId);
-
-				// Get the attachment content
-				InputStream stream = MirrorClient.getAttachmentInputStream(credential, timelineItem.getId(), attachmentId);
-
-				// Create a new timeline item with the attachment
-				TimelineItem echoPhotoItem = new TimelineItem();
-				echoPhotoItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
-				echoPhotoItem.setText("Echoing your shared photo");
-
-				MirrorClient.insertTimelineItem(credential, echoPhotoItem, "image/jpeg", stream);
-
-			}
 			if (notification.getUserActions().contains(new UserAction().setType("CUSTOM").setPayload("athome"))) {
 				LOG.info("custom at home");
 
@@ -138,7 +121,7 @@ public class NotifyServlet extends HttpServlet {
 				if (location != null) {
 					LOG.info("got location");
 					LocationUtil.saveTag(userId, location, "home", LocationTag.STATUS_AT);
-					RemindMeCard.insert(userId, credential, request);
+					RemindMeCard.insert(userId, credential, request, true);
 				} else {
 					LOG.info("missing location");
 					checkLocationSubscription(credential, userId, request);
@@ -150,7 +133,7 @@ public class NotifyServlet extends HttpServlet {
 				if (location != null) {
 					LOG.info("got location");
 					LocationUtil.saveTag(userId, location, "work", LocationTag.STATUS_AT);
-					RemindMeCard.insert(userId, credential, request);
+					RemindMeCard.insert(userId, credential, request, true);
 				} else {
 					LOG.info("missing location");
 				}
@@ -170,6 +153,8 @@ public class NotifyServlet extends HttpServlet {
 				LOG.info("got a REPLY: " + timelineItem.getText());
 				if (!ReplyParser.parse(userId, timelineItem.getText())) {
 					sendSorryCard(credential, timelineItem.getText());
+				} else {
+					RemindMeCard.insert(userId, credential, request, true);
 				}
 			} else {
 				LOG.warning("I don't know what to do with this notification, so I'm ignoring it." + notification.getUserActions());

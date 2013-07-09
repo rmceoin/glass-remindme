@@ -23,7 +23,7 @@
 	<classpathentry kind="lib" path="web/WEB-INF/lib/xpp3-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/google-api-services-mirror-v1-rev11-1.15.0-rc.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/glass-remindme/google-api-services-mirror-v1-rev7-1.15.0-rc-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:platform:/resource/glass-remindme/javadoc/google-api-services-mirror-v1-rev7-1.15.0-rc-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="web/WEB-INF/lib/google-api-services-oauth2-v2-rev39-1.15.0-rc.jar">

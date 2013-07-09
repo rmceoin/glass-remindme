@@ -54,6 +54,6 @@ public class NewUserBootstrapper {
 			LOG.warning("Failed to create timeline subscription. Might be running on " + "localhost. Details:" + e.getDetails().toPrettyString());
 		}
 
-		RemindMeCard.insert(userId, credential, req);
+		RemindMeCard.insert(userId, credential, req, true);
 	}
 }

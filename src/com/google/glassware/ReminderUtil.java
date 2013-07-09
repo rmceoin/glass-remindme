@@ -70,6 +70,7 @@ public class ReminderUtil {
 			reminder.setCreated((Date) reminderEntity.getProperty("created"));
 			reminder.setReminder((String) reminderEntity.getProperty("reminder"));
 			reminder.setDirection((String) reminderEntity.getProperty("direction"));
+			reminder.setKey(reminderEntity.getKey());
 
 			reminders.add(reminder);
 		}
@@ -94,6 +95,7 @@ public class ReminderUtil {
 			reminder.setCreated((Date) reminderEntity.getProperty("created"));
 			reminder.setReminder((String) reminderEntity.getProperty("reminder"));
 			reminder.setDirection((String) reminderEntity.getProperty("direction"));
+			reminder.setKey(reminderEntity.getKey());
 
 			reminders.add(reminder);
 		}
@@ -116,6 +118,7 @@ public class ReminderUtil {
 			reminder.setCreated((Date) reminderEntity.getProperty("created"));
 			reminder.setReminder((String) reminderEntity.getProperty("reminder"));
 			reminder.setDirection((String) reminderEntity.getProperty("direction"));
+			reminder.setKey(reminderEntity.getKey());
 
 			reminders.add(reminder);
 		}
@@ -131,7 +134,7 @@ public class ReminderUtil {
 		builder.append("<article>");
 		builder.append("<section>\n");
 		builder.append("<p class=\"text-auto-size\">");
-		if (reminder.getReminder().contentEquals(Reminder.DIRECTION_ARRIVE)) {
+		if (reminder.getDirection().contentEquals(Reminder.DIRECTION_ARRIVE)) {
 			builder.append("At ");
 		} else {
 			builder.append("Left ");
@@ -150,5 +153,13 @@ public class ReminderUtil {
 		
 		reminderItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
 		MirrorClient.insertTimelineItem(credential, reminderItem);
+		deleteReminder(reminder);
+	}
+	
+	public static void deleteReminder(Reminder reminder) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		if ((reminder!=null) && (reminder.getKey()!=null)) {
+			datastore.delete(reminder.getKey());
+		}
 	}
 }
