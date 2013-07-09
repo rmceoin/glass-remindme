@@ -18,6 +18,7 @@ package com.google.glassware;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -41,7 +42,7 @@ public class RemindMeCard {
 	private static final String KIND = RemindMeCard.class.getName();
 	private static final String REMINDMECARDS = KIND + ".cards";
 	
-	public static void insert(String userId, Credential credential, HttpServletRequest req, boolean notify) throws IOException {
+	public static void insert(String userId, Credential credential, HttpServletRequest req, boolean notify, List<Reminder> skipReminders) throws IOException {
 		
 		String oldCardId=getCardId(userId);
 		if (oldCardId!=null) {
@@ -52,7 +53,7 @@ public class RemindMeCard {
 //				LOG.info(" id "+timelineItem.getId());
 				if (timelineItem.getId().equals(oldCardId)) {
 					// found the old card is still in the timeline
-					timelineItem.setHtml(cardHTML(userId));
+					timelineItem.setHtml(cardHTML(userId, skipReminders));
 					if (notify) {
 						timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
 					} else {
@@ -66,7 +67,7 @@ public class RemindMeCard {
 		}
 		TimelineItem timelineItem = new TimelineItem();
 		timelineItem.setTitle(MainServlet.CONTACT_NAME);
-		timelineItem.setHtml(cardHTML(userId));
+		timelineItem.setHtml(cardHTML(userId, null));
 
 		List<MenuItem> menuItemList = new ArrayList<MenuItem>();
 		menuItemList.add(new MenuItem().setAction("REPLY"));
@@ -102,7 +103,7 @@ public class RemindMeCard {
 		saveCard(userId, cardInserted);
 	}
 
-	private static String cardHTML(String userId) {
+	private static String cardHTML(String userId, List<Reminder> skipReminders) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<article>");
 		builder.append("<section>\n");
@@ -110,14 +111,24 @@ public class RemindMeCard {
 		List<LocationTag> locationTags = LocationUtil.getAllTags(userId);
 		if ((locationTags != null) && (locationTags.size()>0)) {
 
+			HashMap<String, String> remindersToSkip = new HashMap<String, String>();
+			if (skipReminders!=null) {
+				for (Reminder reminder : skipReminders) {
+					remindersToSkip.put(reminder.getKey().toString(), reminder.getTag());
+					LOG.info("skip: "+reminder.getTag()+" : "+reminder.getReminder());
+				}
+			}
+
 			List<Reminder> reminders=ReminderUtil.getAllReminders(userId);
 			if ((reminders!=null) && (reminders.size()>0)) {
 				builder.append("<table>");
 				for (Reminder reminder : reminders) {
-					builder.append("<tr>");
-					builder.append("<td>"+reminder.getTag()+"</td>");
-					builder.append("<td>"+reminder.getReminder()+"</td>");
-					builder.append("<tr>\n");
+					if (!remindersToSkip.containsKey(reminder.getKey().toString())) {
+						builder.append("<tr>");
+						builder.append("<td>"+reminder.getTag()+"</td>");
+						builder.append("<td>"+reminder.getReminder()+"</td>");
+						builder.append("<tr>\n");
+					}
 				}
 				builder.append("</table>");
 			} else {

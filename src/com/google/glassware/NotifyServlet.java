@@ -103,7 +103,7 @@ public class NotifyServlet extends HttpServlet {
 			List<Reminder> reminders = LocationUtil.checkTags(userId, location);
 			if (reminders.size()>0) {
 				// update the RemindMe card so it doesn't list the reminder(s) we just sent
-				RemindMeCard.insert(userId, credential, request, false);
+				RemindMeCard.insert(userId, credential, request, false, reminders);
 				// now send all the reminders
 				for (Reminder reminder : reminders) {
 					ReminderUtil.sendReminder(credential, reminder);
@@ -121,7 +121,7 @@ public class NotifyServlet extends HttpServlet {
 				if (location != null) {
 					LOG.info("got location");
 					LocationUtil.saveTag(userId, location, "home", LocationTag.STATUS_AT);
-					RemindMeCard.insert(userId, credential, request, true);
+					RemindMeCard.insert(userId, credential, request, true, null);
 				} else {
 					LOG.info("missing location");
 					checkLocationSubscription(credential, userId, request);
@@ -133,7 +133,7 @@ public class NotifyServlet extends HttpServlet {
 				if (location != null) {
 					LOG.info("got location");
 					LocationUtil.saveTag(userId, location, "work", LocationTag.STATUS_AT);
-					RemindMeCard.insert(userId, credential, request, true);
+					RemindMeCard.insert(userId, credential, request, true, null);
 				} else {
 					LOG.info("missing location");
 				}
@@ -154,7 +154,7 @@ public class NotifyServlet extends HttpServlet {
 				if (!ReplyParser.parse(userId, timelineItem.getText())) {
 					sendSorryCard(credential, timelineItem.getText());
 				} else {
-					RemindMeCard.insert(userId, credential, request, true);
+					RemindMeCard.insert(userId, credential, request, true, null);
 				}
 			} else {
 				LOG.warning("I don't know what to do with this notification, so I'm ignoring it." + notification.getUserActions());

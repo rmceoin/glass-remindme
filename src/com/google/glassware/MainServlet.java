@@ -72,7 +72,7 @@ public class MainServlet extends HttpServlet {
 			LOG.fine("Inserting Remind Me");
 
 			try {
-				RemindMeCard.insert(userId, credential, req, true);
+				RemindMeCard.insert(userId, credential, req, true, null);
 			} catch (GoogleJsonResponseException e) {
 				LOG.warning("error inserting RemindMe: " + e.getDetails().getErrors());
 			}
