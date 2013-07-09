@@ -120,19 +120,25 @@ public class RemindMeCard {
 			}
 
 			List<Reminder> reminders=ReminderUtil.getAllReminders(userId);
-			if ((reminders!=null) && (reminders.size()>0)) {
+			if ((reminders!=null) && (reminders.size()>0) && (reminders.size()>remindersToSkip.size())) {
 				builder.append("<table>");
 				for (Reminder reminder : reminders) {
 					if (!remindersToSkip.containsKey(reminder.getKey().toString())) {
 						builder.append("<tr>");
-						builder.append("<td>"+reminder.getTag()+"</td>");
+						builder.append("<td>");
+						if (reminder.getDirection().contentEquals(Reminder.DIRECTION_ARRIVE)) {
+							builder.append("--> ");
+						} else {
+							builder.append("<-- ");
+						}
+						builder.append(reminder.getTag()+"</td>");
 						builder.append("<td>"+reminder.getReminder()+"</td>");
 						builder.append("<tr>\n");
 					}
 				}
 				builder.append("</table>");
 			} else {
-				builder.append("<p>Reply to this card with a command like this:</p>");
+				builder.append("<p>Reply to this card with a command like this:</p><br>");
 				builder.append("<p>remind me to [do something] at [home]</p>");
 			}
 			

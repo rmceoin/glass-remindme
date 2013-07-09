@@ -7,7 +7,8 @@ function initmap(latitude, longitude, name, idname) {
 	var mapOptions = {
 		center: latlng,
 		zoom: 14,
-		mapTypeId: google.maps.MapTypeId.ROADMAP
+		mapTypeId: google.maps.MapTypeId.ROADMAP,
+		streetViewControl: false
 	};
 	var map = new google.maps.Map(document.getElementById(idname), mapOptions);
 
