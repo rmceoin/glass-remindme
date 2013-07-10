@@ -4,6 +4,9 @@ import com.google.api.services.mirror.model.Location;
 
 public class LocationTag {
 
+	public static final String HOME="Home";
+	public static final String WORK="Work";
+
 	public static final String STATUS_AWAY = "away";
 	public static final String STATUS_AT = "at";
 

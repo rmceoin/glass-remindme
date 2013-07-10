@@ -39,8 +39,8 @@ limitations under the License.
 
   Credential credential = com.google.glassware.AuthUtil.getCredential(userId);
 
-  LocationTag locationHome = LocationUtil.getTag(userId, "home");
-  LocationTag locationWork = LocationUtil.getTag(userId, "work");
+  LocationTag locationHome = LocationUtil.getTag(userId, LocationTag.HOME);
+  LocationTag locationWork = LocationUtil.getTag(userId, LocationTag.WORK);
 
 
 %>
@@ -75,10 +75,10 @@ limitations under the License.
     <script type="text/javascript">
       function initialize() {
       <% if (locationHome!=null) { %>
-	      initmap(<%= locationHome.getLocation().getLatitude() %>, <%= locationHome.getLocation().getLongitude() %>, "Home", "map-canvas-home");
+	      initmap(<%= locationHome.getLocation().getLatitude() %>, <%= locationHome.getLocation().getLongitude() %>, "<%= locationHome.getTag() %>", "map-canvas-home");
 	  <% }
 	  	 if (locationWork!=null) { %>
-	      initmap(<%= locationWork.getLocation().getLatitude() %>, <%= locationWork.getLocation().getLongitude() %>, "Work", "map-canvas-work");
+	      initmap(<%= locationWork.getLocation().getLatitude() %>, <%= locationWork.getLocation().getLongitude() %>, "<%= locationWork.getTag() %>", "map-canvas-work");
 	  <% } %>
       }
       google.maps.event.addDomListener(window, 'load', initialize);

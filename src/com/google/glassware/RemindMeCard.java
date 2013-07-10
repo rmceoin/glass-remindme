@@ -41,26 +41,26 @@ public class RemindMeCard {
 
 	private static final String KIND = RemindMeCard.class.getName();
 	private static final String REMINDMECARDS = KIND + ".cards";
-	
+
 	public static void insert(String userId, Credential credential, HttpServletRequest req, boolean notify, List<Reminder> skipReminders) throws IOException {
-		
-		String oldCardId=getCardId(userId);
-		if (oldCardId!=null) {
-			LOG.info("found old card: "+oldCardId);
+
+		String oldCardId = getCardId(userId);
+		if (oldCardId != null) {
+			LOG.info("found old card: " + oldCardId);
 			List<TimelineItem> timelineItems = MirrorClient.listItems(credential, 200L).getItems();
-			LOG.info("timeline has "+timelineItems.size());
+			LOG.info("timeline has " + timelineItems.size());
 			for (TimelineItem timelineItem : timelineItems) {
-//				LOG.info(" id "+timelineItem.getId());
 				if (timelineItem.getId().equals(oldCardId)) {
 					// found the old card is still in the timeline
 					timelineItem.setHtml(cardHTML(userId, skipReminders));
+					timelineItem.setMenuItems(generateMenu(userId, req));
 					if (notify) {
 						timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
 					} else {
 						timelineItem.setNotification(new NotificationConfig().setLevel(null));
 					}
-					TimelineItem cardUpdated=MirrorClient.updateTimelineItem(credential, oldCardId, timelineItem);
-					LOG.info("found old card and updated it: "+timelineItem+" "+cardUpdated);
+					TimelineItem cardUpdated = MirrorClient.updateTimelineItem(credential, oldCardId, timelineItem);
+					LOG.info("found old card and updated it: " + timelineItem + " " + cardUpdated);
 					return;
 				}
 			}
@@ -69,8 +69,31 @@ public class RemindMeCard {
 		timelineItem.setTitle(MainServlet.CONTACT_NAME);
 		timelineItem.setHtml(cardHTML(userId, null));
 
+		timelineItem.setMenuItems(generateMenu(userId, req));
+		if (notify) {
+			timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
+		} else {
+			timelineItem.setNotification(new NotificationConfig().setLevel(null));
+		}
+
+		TimelineItem cardInserted = MirrorClient.insertTimelineItem(credential, timelineItem);
+		saveCard(userId, cardInserted);
+	}
+
+	private static List<MenuItem> generateMenu(String userId, HttpServletRequest req) {
 		List<MenuItem> menuItemList = new ArrayList<MenuItem>();
 		menuItemList.add(new MenuItem().setAction("REPLY"));
+
+		boolean hasHome=false;
+		boolean hasWork=false;
+		List<LocationTag> locationTags = LocationUtil.getAllTags(userId);
+		for (LocationTag locationTag : locationTags) {
+			if (locationTag.getTag().contains(LocationTag.HOME)) {
+				hasHome=true;
+			} else if (locationTag.getTag().contains(LocationTag.WORK)) {
+				hasWork=true;
+			}
+		}
 
 		List<MenuValue> menuAtHomeValues = new ArrayList<MenuValue>();
 		menuAtHomeValues.add(new MenuValue().setIconUrl(WebUtil.buildUrl(req, "/static/images/1-Normal-Home-icon.png")).setDisplayName("At Home"));
@@ -80,47 +103,42 @@ public class RemindMeCard {
 		menuAtWorkValues.add(new MenuValue().setIconUrl(WebUtil.buildUrl(req, "/static/images/Briefcase.png")).setDisplayName("At Work"));
 		menuItemList.add(new MenuItem().setValues(menuAtWorkValues).setId("atwork").setAction("CUSTOM"));
 
-		List<MenuValue> menuShowHomeValues = new ArrayList<MenuValue>();
-		menuShowHomeValues.add(new MenuValue().setIconUrl(WebUtil.buildUrl(req, "/static/images/1-Normal-Home-icon.png")).setDisplayName("Show Home"));
-		menuItemList.add(new MenuItem().setValues(menuShowHomeValues).setId("showhome").setAction("CUSTOM"));
+		if (hasHome) {
+			List<MenuValue> menuShowHomeValues = new ArrayList<MenuValue>();
+			menuShowHomeValues.add(new MenuValue().setIconUrl(WebUtil.buildUrl(req, "/static/images/1-Normal-Home-icon.png")).setDisplayName("Show Home"));
+			menuItemList.add(new MenuItem().setValues(menuShowHomeValues).setId("showhome").setAction("CUSTOM"));
+		}
 
-		List<MenuValue> menuShowWorkValues = new ArrayList<MenuValue>();
-		menuShowWorkValues.add(new MenuValue().setIconUrl(WebUtil.buildUrl(req, "/static/images/Briefcase.png")).setDisplayName("Show Work"));
-		menuItemList.add(new MenuItem().setValues(menuShowWorkValues).setId("showwork").setAction("CUSTOM"));
+		if (hasWork) {
+			List<MenuValue> menuShowWorkValues = new ArrayList<MenuValue>();
+			menuShowWorkValues.add(new MenuValue().setIconUrl(WebUtil.buildUrl(req, "/static/images/Briefcase.png")).setDisplayName("Show Work"));
+			menuItemList.add(new MenuItem().setValues(menuShowWorkValues).setId("showwork").setAction("CUSTOM"));
+		}
 
 		menuItemList.add(new MenuItem().setAction("TOGGLE_PINNED"));
 		menuItemList.add(new MenuItem().setAction("DELETE"));
 
-		timelineItem.setMenuItems(menuItemList);
-		if (notify) {
-			timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
-		} else {
-			timelineItem.setNotification(new NotificationConfig().setLevel(null));
-		}
-		timelineItem.setIsPinned(true);
-
-		TimelineItem cardInserted=MirrorClient.insertTimelineItem(credential, timelineItem);
-		saveCard(userId, cardInserted);
+		return menuItemList;
 	}
 
 	private static String cardHTML(String userId, List<Reminder> skipReminders) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<article>");
 		builder.append("<section>\n");
-		
+
 		List<LocationTag> locationTags = LocationUtil.getAllTags(userId);
-		if ((locationTags != null) && (locationTags.size()>0)) {
+		if ((locationTags != null) && (locationTags.size() > 0)) {
 
 			HashMap<String, String> remindersToSkip = new HashMap<String, String>();
-			if (skipReminders!=null) {
+			if (skipReminders != null) {
 				for (Reminder reminder : skipReminders) {
 					remindersToSkip.put(reminder.getKey().toString(), reminder.getTag());
-					LOG.info("skip: "+reminder.getTag()+" : "+reminder.getReminder());
+					LOG.info("skip: " + reminder.getTag() + " : " + reminder.getReminder());
 				}
 			}
 
-			List<Reminder> reminders=ReminderUtil.getAllReminders(userId);
-			if ((reminders!=null) && (reminders.size()>0) && (reminders.size()>remindersToSkip.size())) {
+			List<Reminder> reminders = ReminderUtil.getAllReminders(userId);
+			if ((reminders != null) && (reminders.size() > 0) && (reminders.size() > remindersToSkip.size())) {
 				builder.append("<table>");
 				for (Reminder reminder : reminders) {
 					if (!remindersToSkip.containsKey(reminder.getKey().toString())) {
@@ -131,8 +149,8 @@ public class RemindMeCard {
 						} else {
 							builder.append("<-- ");
 						}
-						builder.append(reminder.getTag()+"</td>");
-						builder.append("<td>"+reminder.getReminder()+"</td>");
+						builder.append(reminder.getTag() + "</td>");
+						builder.append("<td>" + reminder.getReminder() + "</td>");
 						builder.append("<tr>\n");
 					}
 				}
@@ -141,11 +159,10 @@ public class RemindMeCard {
 				builder.append("<p>Reply to this card with a command like this:</p><br>");
 				builder.append("<p>remind me to [do something] at [home]</p>");
 			}
-			
+
 		} else {
 			builder.append("<p>Use the 'At Home' and 'At Work' menu commands to set a location.</p>");
 		}
-			
 
 		builder.append("</section>\n");
 		builder.append("<footer>");
@@ -154,9 +171,10 @@ public class RemindMeCard {
 		builder.append("</div>");
 		builder.append("</footer>\n");
 		builder.append("</article>");
-		
+
 		return builder.toString();
 	}
+
 	public static void saveCard(String userId, TimelineItem card) {
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

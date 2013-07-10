@@ -20,6 +20,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.mirror.Mirror;
 import com.google.api.services.mirror.model.Location;
+import com.google.api.services.mirror.model.MenuItem;
 import com.google.api.services.mirror.model.Notification;
 import com.google.api.services.mirror.model.NotificationConfig;
 import com.google.api.services.mirror.model.Subscription;
@@ -30,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -98,7 +100,7 @@ public class NotifyServlet extends HttpServlet {
 
 			LOG.info("New location is " + location.getLatitude() + ", " + location.getLongitude());
 //			Location previousLocation = LocationUtil.get(userId);
-//			LocationUtil.save(userId, location);
+			LocationUtil.save(userId, location);
 
 			List<Reminder> reminders = LocationUtil.checkTags(userId, location);
 			if (reminders.size()>0) {
@@ -120,10 +122,12 @@ public class NotifyServlet extends HttpServlet {
 				Location location = LocationUtil.get(userId);
 				if (location != null) {
 					LOG.info("got location");
-					LocationUtil.saveTag(userId, location, "home", LocationTag.STATUS_AT);
-					RemindMeCard.insert(userId, credential, request, true, null);
+					LocationUtil.saveTag(userId, location, LocationTag.HOME, LocationTag.STATUS_AT);
+					RemindMeCard.insert(userId, credential, request, false, null);
+					sendMap(credential, userId, location, LocationTag.HOME);
 				} else {
 					LOG.info("missing location");
+					sendSorryCard(credential, "", "Sorry, haven't seen your location yet.  Try again in 10 minutes.");
 					checkLocationSubscription(credential, userId, request);
 				}
 			} else if (notification.getUserActions().contains(new UserAction().setType("CUSTOM").setPayload("atwork"))) {
@@ -132,27 +136,30 @@ public class NotifyServlet extends HttpServlet {
 				Location location = LocationUtil.get(userId);
 				if (location != null) {
 					LOG.info("got location");
-					LocationUtil.saveTag(userId, location, "work", LocationTag.STATUS_AT);
-					RemindMeCard.insert(userId, credential, request, true, null);
+					LocationUtil.saveTag(userId, location, LocationTag.WORK, LocationTag.STATUS_AT);
+					RemindMeCard.insert(userId, credential, request, false, null);
+					sendMap(credential, userId, location, LocationTag.WORK);
 				} else {
 					LOG.info("missing location");
+					sendSorryCard(credential, "", "Sorry, haven't seen your location yet.  Try again in 10 minutes.");
+					checkLocationSubscription(credential, userId, request);
 				}
 			} else if (notification.getUserActions().contains(new UserAction().setType("CUSTOM").setPayload("showhome"))) {
-				LocationTag locationTag = LocationUtil.getTag(userId, "home");
+				LocationTag locationTag = LocationUtil.getTag(userId, LocationTag.HOME);
 				if (locationTag != null) {
 					LOG.info("show home got location");
-					sendMap(credential, userId, locationTag.getLocation(), "Home");
+					sendMap(credential, userId, locationTag.getLocation(), locationTag.getTag());
 				}
 			} else if (notification.getUserActions().contains(new UserAction().setType("CUSTOM").setPayload("showwork"))) {
-				LocationTag locationTag = LocationUtil.getTag(userId, "work");
+				LocationTag locationTag = LocationUtil.getTag(userId, LocationTag.WORK);
 				if (locationTag != null) {
 					LOG.info("show work got location");
-					sendMap(credential, userId, locationTag.getLocation(), "Work");
+					sendMap(credential, userId, locationTag.getLocation(), locationTag.getTag());
 				}
 			} else if (notification.getUserActions().contains(new UserAction().setType("REPLY"))) {
 				LOG.info("got a REPLY: " + timelineItem.getText());
 				if (!ReplyParser.parse(userId, timelineItem.getText())) {
-					sendSorryCard(credential, timelineItem.getText());
+					sendSorryCard(credential, "Sorry, did not understand:", timelineItem.getText());
 				} else {
 					RemindMeCard.insert(userId, credential, request, true, null);
 				}
@@ -192,13 +199,13 @@ public class NotifyServlet extends HttpServlet {
 		}
 	}
 
-	private void sendSorryCard(Credential credential, String message) throws IOException {
+	private void sendSorryCard(Credential credential, String headline, String message) throws IOException {
 		TimelineItem timelineItem = new TimelineItem();
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("<article>\n");
 		builder.append("<section>\n");
-		builder.append("<p>Sorry, did not understand:</p>");
+		builder.append("<p>" + headline + "</p>");
 		builder.append("<p>" + message + "</p>");
 		builder.append("</section>\n");
 		builder.append("<footer>");
@@ -211,6 +218,10 @@ public class NotifyServlet extends HttpServlet {
 		timelineItem.setHtml(builder.toString());
 		timelineItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
 
+		List<MenuItem> menuItemList = new ArrayList<MenuItem>();
+		menuItemList.add(new MenuItem().setAction("REPLY"));
+		timelineItem.setMenuItems(menuItemList);
+		
 		MirrorClient.insertTimelineItem(credential, timelineItem);
 	}
 

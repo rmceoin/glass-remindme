@@ -15,6 +15,7 @@
  */
 package com.google.glassware;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.logging.Logger;
@@ -38,8 +39,11 @@ public class ReplyParser {
 			String middle = matcher.group(2);
 			String tag = matcher.group(3);
 			LOG.info("matched: " + reminder + " - " + middle + " - " + tag);
-			ReminderUtil.saveReminder(userId, tag, reminder, Reminder.DIRECTION_ARRIVE);
-			return true;
+			String tagUsed=matchTag(userId, tag);
+			if (tagUsed!=null) {
+				ReminderUtil.saveReminder(userId, tagUsed, reminder, Reminder.DIRECTION_ARRIVE);
+				return true;
+			}
 		}
 		pattern = Pattern.compile("^remind me to (.*) (when i leave) ([a-z]+)$", Pattern.CASE_INSENSITIVE);
 		matcher = pattern.matcher(reply);
@@ -48,9 +52,23 @@ public class ReplyParser {
 			String middle = matcher.group(2);
 			String tag = matcher.group(3);
 			LOG.info("matched: " + reminder + " - " + middle + " - " + tag);
-			ReminderUtil.saveReminder(userId, tag, reminder, Reminder.DIRECTION_DEPART);
-			return true;
+			String tagUsed=matchTag(userId, tag);
+			if (tagUsed!=null) {
+				ReminderUtil.saveReminder(userId, tagUsed, reminder, Reminder.DIRECTION_DEPART);
+				return true;
+			}
 		}
 		return false;
+	}
+	
+	private static String matchTag(String userId, String tag) {
+		tag=tag.toLowerCase();
+		List<LocationTag> locationTags = LocationUtil.getAllTags(userId);
+		for (LocationTag locationTag : locationTags) {
+			if (tag.contentEquals(locationTag.getTag().toLowerCase())) {
+				return locationTag.getTag();
+			}
+		}
+		return null;
 	}
 }
