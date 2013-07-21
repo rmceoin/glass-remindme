@@ -78,6 +78,7 @@ public class ReminderUtil {
 	}
 
 	public static List<Reminder> getAllReminders(String userId, String tag, String direction) {
+		LOG.info("getAllReminders(" + userId + ", " + tag + ", " + direction + ")");
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);

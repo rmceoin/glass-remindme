@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 
 public class LocationUtil {
 	private static final Logger LOG = Logger.getLogger(MainServlet.class.getSimpleName());
+	private static final boolean debug = true;
 
 	private static final String KIND = LocationUtil.class.getName();
 	private static final String LOCATION_CURRENT = KIND + ".current";
@@ -117,7 +118,7 @@ public class LocationUtil {
 		entity.setProperty("status", status);
 
 		datastore.put(entity);
-		LOG.info("Saved location for " + userId + " tag " + tag);
+		LOG.info("Saved location for " + userId + " tag=" + tag + " status="+status);
 	}
 
 	public static LocationTag getTag(String userId, String tag) {
@@ -224,6 +225,7 @@ public class LocationUtil {
 		if (foundLocationTag == false) {
 			LOG.info("no LocationTags status updates");
 		}
+		if (debug) LOG.info("reminders="+reminders);
 		return reminders;
 	}
 }
