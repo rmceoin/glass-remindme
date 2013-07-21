@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.glassware;
+package com.mceoin.remindme;
 
 import com.google.api.services.mirror.model.Location;
 import com.google.appengine.api.datastore.DatastoreService;

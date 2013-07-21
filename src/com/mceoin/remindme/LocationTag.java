@@ -1,4 +1,4 @@
-package com.google.glassware;
+package com.mceoin.remindme;
 
 import com.google.api.services.mirror.model.Location;
 

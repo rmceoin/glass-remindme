@@ -23,7 +23,7 @@ limitations under the License.
   <!-- filters -->
   <filter>
     <filter-name>authFilter</filter-name>
-    <filter-class>com.google.glassware.AuthFilter</filter-class>
+    <filter-class>com.mceoin.remindme.AuthFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>authFilter</filter-name>
@@ -32,7 +32,7 @@ limitations under the License.
 
   <filter>
     <filter-name>reauthFilter</filter-name>
-    <filter-class>com.google.glassware.ReauthFilter</filter-class>
+    <filter-class>com.mceoin.remindme.ReauthFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>reauthFilter</filter-name>
@@ -42,7 +42,7 @@ limitations under the License.
   <!-- servlets -->
   <servlet>
     <servlet-name>main</servlet-name>
-    <servlet-class>com.google.glassware.MainServlet</servlet-class>
+    <servlet-class>com.mceoin.remindme.MainServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>main</servlet-name>
@@ -51,7 +51,7 @@ limitations under the License.
 
   <servlet>
     <servlet-name>oauth2callback</servlet-name>
-    <servlet-class>com.google.glassware.AuthServlet</servlet-class>
+    <servlet-class>com.mceoin.remindme.AuthServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>oauth2callback</servlet-name>
@@ -60,7 +60,7 @@ limitations under the License.
 
   <servlet>
     <servlet-name>notify</servlet-name>
-    <servlet-class>com.google.glassware.NotifyServlet</servlet-class>
+    <servlet-class>com.mceoin.remindme.NotifyServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>notify</servlet-name>
@@ -69,7 +69,7 @@ limitations under the License.
 
   <servlet>
     <servlet-name>attachmentproxy</servlet-name>
-    <servlet-class>com.google.glassware.AttachmentProxyServlet</servlet-class>
+    <servlet-class>com.mceoin.remindme.AttachmentProxyServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>attachmentproxy</servlet-name>
@@ -78,7 +78,7 @@ limitations under the License.
 
   <servlet>
     <servlet-name>signout</servlet-name>
-    <servlet-class>com.google.glassware.SignOutServlet</servlet-class>
+    <servlet-class>com.mceoin.remindme.SignOutServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>signout</servlet-name>

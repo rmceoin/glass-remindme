@@ -15,12 +15,12 @@ limitations under the License.
 -->
 <%@ page import="com.google.api.client.auth.oauth2.Credential" %>
 <%@ page import="com.google.api.services.mirror.model.Contact" %>
-<%@ page import="com.google.glassware.MirrorClient" %>
-<%@ page import="com.google.glassware.WebUtil" %>
-<%@ page import="com.google.glassware.LocationUtil" %>
-<%@ page import="com.google.glassware.LocationTag" %>
-<%@ page import="com.google.glassware.Reminder" %>
-<%@ page import="com.google.glassware.ReminderUtil" %>
+<%@ page import="com.mceoin.remindme.MirrorClient" %>
+<%@ page import="com.mceoin.remindme.WebUtil" %>
+<%@ page import="com.mceoin.remindme.LocationUtil" %>
+<%@ page import="com.mceoin.remindme.LocationTag" %>
+<%@ page import="com.mceoin.remindme.Reminder" %>
+<%@ page import="com.mceoin.remindme.ReminderUtil" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.google.api.services.mirror.model.TimelineItem" %>
 <%@ page import="com.google.api.services.mirror.model.Subscription" %>
@@ -28,16 +28,16 @@ limitations under the License.
 <%@ page import="com.google.api.services.mirror.model.Location" %>
 <%@ page import="com.google.api.services.oauth2.model.Userinfo" %>
 
-<%@ page import="com.google.glassware.MainServlet" %>
+<%@ page import="com.mceoin.remindme.MainServlet" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!doctype html>
 <%
-  String userId = com.google.glassware.AuthUtil.getUserId(request);
+  String userId = com.mceoin.remindme.AuthUtil.getUserId(request);
   String appBaseUrl = WebUtil.buildUrl(request, "/");
 
-  Credential credential = com.google.glassware.AuthUtil.getCredential(userId);
+  Credential credential = com.mceoin.remindme.AuthUtil.getCredential(userId);
 
   LocationTag locationHome = LocationUtil.getTag(userId, LocationTag.HOME);
   LocationTag locationWork = LocationUtil.getTag(userId, LocationTag.WORK);

@@ -15,14 +15,14 @@ limitations under the License.
 -->
 <%@ page import="com.google.api.client.auth.oauth2.Credential" %>
 <%@ page import="com.google.api.services.mirror.model.Contact" %>
-<%@ page import="com.google.glassware.MirrorClient" %>
-<%@ page import="com.google.glassware.WebUtil" %>
-<%@ page import="com.google.glassware.LocationUtil" %>
-<%@ page import="com.google.glassware.Reminder" %>
-<%@ page import="com.google.glassware.ReminderUtil" %>
+<%@ page import="com.mceoin.remindme.MirrorClient" %>
+<%@ page import="com.mceoin.remindme.WebUtil" %>
+<%@ page import="com.mceoin.remindme.LocationUtil" %>
+<%@ page import="com.mceoin.remindme.Reminder" %>
+<%@ page import="com.mceoin.remindme.ReminderUtil" %>
 <%@ page import="java.util.List" %>
 
-<%@ page import="com.google.glassware.MainServlet" %>
+<%@ page import="com.mceoin.remindme.MainServlet" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
