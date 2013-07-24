@@ -24,6 +24,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -102,7 +103,9 @@ public class LocationUtil {
 
 		Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
 		Filter tagFilter = new FilterPredicate("tag", FilterOperator.EQUAL, tag);
-		Query tagQuery = new Query(LOCATION_TAGS).setFilter(userIdFilter).setFilter(tagFilter);
+		Filter andFilter = CompositeFilterOperator.and(userIdFilter, tagFilter);
+
+		Query tagQuery = new Query(LOCATION_TAGS).setFilter(andFilter);
 		List<Entity> tagEntities = datastore.prepare(tagQuery).asList(FetchOptions.Builder.withLimit(1));
 
 		if (tagEntities.size()>0) {
@@ -126,7 +129,9 @@ public class LocationUtil {
 
 		Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
 		Filter tagFilter = new FilterPredicate("tag", FilterOperator.EQUAL, tag);
-		Query tagQuery = new Query(LOCATION_TAGS).setFilter(userIdFilter).setFilter(tagFilter);
+		Filter andFilter = CompositeFilterOperator.and(userIdFilter, tagFilter);
+
+		Query tagQuery = new Query(LOCATION_TAGS).setFilter(andFilter);
 		List<Entity> tagEntities = datastore.prepare(tagQuery).asList(FetchOptions.Builder.withLimit(1));
 
 		if (tagEntities.size()>0) {

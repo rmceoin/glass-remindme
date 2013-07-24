@@ -82,7 +82,10 @@ public class RemindMeCard {
 
 	private static List<MenuItem> generateMenu(String userId, HttpServletRequest req) {
 		List<MenuItem> menuItemList = new ArrayList<MenuItem>();
-		menuItemList.add(new MenuItem().setAction("REPLY"));
+
+		List<MenuValue> menuReply = new ArrayList<MenuValue>();
+		menuReply.add(new MenuValue().setDisplayName("Remind Me"));
+		menuItemList.add(new MenuItem().setValues(menuReply).setAction("REPLY"));	
 
 		boolean hasHome=false;
 		boolean hasWork=false;

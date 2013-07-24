@@ -32,12 +32,12 @@ public class ReplyParser {
 		// remind me to [do something] at [home]
 		// remind me to [do something] when i get [home]
 		// remind me to [do something] when i get to [work]
-		Pattern pattern = Pattern.compile("^remind me to (.*) (at|when i get|when i get to) ([a-z]+)$", Pattern.CASE_INSENSITIVE);
+		Pattern pattern = Pattern.compile("(remind me|remember) to (.*) (at|when i get|when i get to) ([a-z]+)$", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(reply);
 		if (matcher.find()) {
-			String reminder = matcher.group(1);
-			String middle = matcher.group(2);
-			String tag = matcher.group(3);
+			String reminder = matcher.group(2);
+			String middle = matcher.group(3);
+			String tag = matcher.group(4);
 			LOG.info("matched: " + reminder + " - " + middle + " - " + tag);
 			String tagUsed=matchTag(userId, tag);
 			if (tagUsed!=null) {
@@ -45,12 +45,12 @@ public class ReplyParser {
 				return true;
 			}
 		}
-		pattern = Pattern.compile("^remind me to (.*) (when i leave) ([a-z]+)$", Pattern.CASE_INSENSITIVE);
+		pattern = Pattern.compile("(remind me|remember) to (.*) (when i leave) ([a-z]+)$", Pattern.CASE_INSENSITIVE);
 		matcher = pattern.matcher(reply);
 		if (matcher.find()) {
-			String reminder = matcher.group(1);
-			String middle = matcher.group(2);
-			String tag = matcher.group(3);
+			String reminder = matcher.group(2);
+			String middle = matcher.group(3);
+			String tag = matcher.group(4);
 			LOG.info("matched: " + reminder + " - " + middle + " - " + tag);
 			String tagUsed=matchTag(userId, tag);
 			if (tagUsed!=null) {

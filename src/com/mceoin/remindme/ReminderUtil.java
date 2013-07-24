@@ -28,6 +28,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -37,7 +38,7 @@ public class ReminderUtil {
 
 	private static final String KIND = ReminderUtil.class.getName();
 	private static final String REMINDERS = KIND + ".reminders";
-	
+
 	public static void saveReminder(String userId, String tag, String reminder, String direction) {
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -58,7 +59,9 @@ public class ReminderUtil {
 
 		Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
 		Filter tagFilter = new FilterPredicate("tag", FilterOperator.EQUAL, tag);
-		Query reminderQuery = new Query(REMINDERS).setFilter(userIdFilter).setFilter(tagFilter);
+		Filter andFilter = CompositeFilterOperator.and(userIdFilter, tagFilter);
+
+		Query reminderQuery = new Query(REMINDERS).setFilter(andFilter);
 		Iterable<Entity> reminderEntities = datastore.prepare(reminderQuery).asIterable();
 
 		List<Reminder> reminders = new ArrayList<Reminder>();
@@ -84,7 +87,9 @@ public class ReminderUtil {
 		Filter userIdFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
 		Filter tagFilter = new FilterPredicate("tag", FilterOperator.EQUAL, tag);
 		Filter directionFilter = new FilterPredicate("direction", FilterOperator.EQUAL, direction);
-		Query reminderQuery = new Query(REMINDERS).setFilter(userIdFilter).setFilter(tagFilter).setFilter(directionFilter);
+		Filter andFilter = CompositeFilterOperator.and(userIdFilter, tagFilter, directionFilter);
+
+		Query reminderQuery = new Query(REMINDERS).setFilter(andFilter);
 		Iterable<Entity> reminderEntities = datastore.prepare(reminderQuery).asIterable();
 
 		List<Reminder> reminders = new ArrayList<Reminder>();
@@ -125,7 +130,7 @@ public class ReminderUtil {
 		}
 		return reminders;
 	}
-	
+
 	public static void sendReminder(Credential credential, Reminder reminder) throws IOException {
 		// send the reminder
 		TimelineItem reminderItem = new TimelineItem();
@@ -140,7 +145,7 @@ public class ReminderUtil {
 		} else {
 			builder.append("Left ");
 		}
-		builder.append("<b>"+reminder.getTag()+"</b>, remember to <b>"+reminder.getReminder()+"</b>.");
+		builder.append("<b>" + reminder.getTag() + "</b>, remember to <b>" + reminder.getReminder() + "</b>.");
 		builder.append("</p>\n");
 		builder.append("</section>\n");
 		builder.append("<footer>");
@@ -151,15 +156,15 @@ public class ReminderUtil {
 		builder.append("</article>");
 
 		reminderItem.setHtml(builder.toString());
-		
+
 		reminderItem.setNotification(new NotificationConfig().setLevel("DEFAULT"));
 		MirrorClient.insertTimelineItem(credential, reminderItem);
 		deleteReminder(reminder);
 	}
-	
+
 	public static void deleteReminder(Reminder reminder) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		if ((reminder!=null) && (reminder.getKey()!=null)) {
+		if ((reminder != null) && (reminder.getKey() != null)) {
 			datastore.delete(reminder.getKey());
 		}
 	}

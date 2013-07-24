@@ -14,21 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <%@ page import="com.google.api.client.auth.oauth2.Credential" %>
-<%@ page import="com.google.api.services.mirror.model.Contact" %>
 <%@ page import="com.mceoin.remindme.MirrorClient" %>
 <%@ page import="com.mceoin.remindme.WebUtil" %>
 <%@ page import="com.mceoin.remindme.LocationUtil" %>
 <%@ page import="com.mceoin.remindme.LocationTag" %>
 <%@ page import="com.mceoin.remindme.Reminder" %>
 <%@ page import="com.mceoin.remindme.ReminderUtil" %>
+<%@ page import="com.mceoin.remindme.MainServlet" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.google.api.services.mirror.model.Contact" %>
 <%@ page import="com.google.api.services.mirror.model.TimelineItem" %>
 <%@ page import="com.google.api.services.mirror.model.Subscription" %>
 <%@ page import="com.google.api.services.mirror.model.Attachment" %>
 <%@ page import="com.google.api.services.mirror.model.Location" %>
 <%@ page import="com.google.api.services.oauth2.model.Userinfo" %>
-
-<%@ page import="com.mceoin.remindme.MainServlet" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -118,11 +117,11 @@ limitations under the License.
       <p>To set a reminder, use the card on Glass and REPLY to it by saying a 
       sentence in the following format:</p>
       
-      <pre>remind me to "do something" at "home"
+      <pre>remind me to "do something" at [home]
 remind me to "do something" when i get [home]
 remind me to "do something" when i get to [work]</pre>
 
-      <pre>remind me to "do something" when i leave "work"</pre>
+      <pre>remind me to "do something" when i leave [work]</pre>
 
 	  <p>Currently the Mirror API only sends your location to Glassware every 10 minutes.  This means it can take up to 10 minutes until you receive the reminder.</p>
 	  
