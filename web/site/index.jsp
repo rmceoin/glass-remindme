@@ -64,26 +64,40 @@ limitations under the License.
  	#firstrow {
  		margin-top: 41px;
  	}
-    #map-canvas-home { height: 200px; width: 300px; }
-    #map-canvas-work { height: 200px; width: 300px; }
+    #map-canvas-home { height: 300px; width: 400px; }
+    /* need the img and label hack due to conflict between bootstrap and maps */
+    #map-canvas-home img { max-width: none; }
+    #map-canvas-home label { width: auto; display:inline; }
+    #map-canvas-work { height: 300px; width: 400px; }
+    #map-canvas-work img { max-width: none; }
+    #map-canvas-work label { width: auto; display:inline; }
   </style>
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPt_lMcqqZ6hkW6_RrnNJE_QtPUCtVg1g&sensor=false">
     </script>
     <script type="text/javascript" src="/locationtags.js"></script>
     <script type="text/javascript">
+      var markerhome;
+      var markerwork;
       function initialize() {
+      		console.log("initialize");
       <% if (locationHome!=null) { %>
-	      initmap(<%= locationHome.getLocation().getLatitude() %>, <%= locationHome.getLocation().getLongitude() %>, "<%= locationHome.getTag() %>", "map-canvas-home");
+	      markerhome=initmap(<%= locationHome.getLocation().getLatitude() %>, <%= locationHome.getLocation().getLongitude() %>, "<%= locationHome.getTag() %>", "map-canvas-home");
+	      $( "#editmarkerhome" )
+	      	.button()
+      		.click(function() {
+      		console.log("clicked");
+	        	markerEditable(markerhome, true)
+    	  	})
 	  <% }
 	  	 if (locationWork!=null) { %>
-	      initmap(<%= locationWork.getLocation().getLatitude() %>, <%= locationWork.getLocation().getLongitude() %>, "<%= locationWork.getTag() %>", "map-canvas-work");
+	      markerwork=initmap(<%= locationWork.getLocation().getLatitude() %>, <%= locationWork.getLocation().getLongitude() %>, "<%= locationWork.getTag() %>", "map-canvas-work");
 	  <% } %>
       }
       google.maps.event.addDomListener(window, 'load', initialize);
     </script>
 </head>
-<body onload="initialize()">
+<body>
 <div class="navbar navbar-inverse navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container">
@@ -102,7 +116,7 @@ limitations under the License.
 
   <!-- Example row of columns -->
   <div class="row" id="firstrow">
-    <div class="span8">
+    <div class="span7">
       <h2>RemindMe Card</h2>
 
       <p>When you first sign in, Glass RemindMe inserts a card. Use
@@ -160,16 +174,16 @@ remind me to "do something" when i get to [work]</pre>
 	  </table>
     </div>
 
-    <div class="span4">
+    <div class="span5">
       <h2>Location Tags</h2>
 
 	   	<h3>Home</h3>
       <% if (locationHome==null) { %>
         <p>No home set</p>
       <% } else { %>
+        <button id="editmarkerhome">Edit</button>
         <div id="map-canvas-home"></div>
       <% } %>
-
       	<h3>Work</h3>
       <% if (locationWork==null) { %>
         <p>No work set</p>

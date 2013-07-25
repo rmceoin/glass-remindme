@@ -18,6 +18,7 @@ package com.mceoin.remindme;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.mirror.model.Contact;
+import com.google.api.services.mirror.model.Location;
 import com.google.common.collect.Lists;
 
 import java.io.IOException;
@@ -102,6 +103,17 @@ public class MainServlet extends HttpServlet {
 
 			message = "Contact has been deleted.";
 
+		} else if (req.getParameter("operation").equals("updateMarker")) {
+			double latitude = Double.parseDouble(req.getParameter("latitude"));
+			double longitude = Double.parseDouble(req.getParameter("longitude"));
+			LOG.info("updateMarker: userId=" + userId + ", latitude=" + latitude+ ", longitude=" + longitude);
+			LocationTag tag=LocationUtil.getTag(userId, req.getParameter("tag"));
+			Location newLocation=new Location();
+			newLocation.setLatitude(latitude);
+			newLocation.setLongitude(longitude);
+			tag.setLocation(newLocation);
+			LocationUtil.saveTag(userId, newLocation, tag.getTag(), tag.getStatus());
+			
 		} else {
 			String operation = req.getParameter("operation");
 			LOG.warning("Unknown operation specified " + operation);

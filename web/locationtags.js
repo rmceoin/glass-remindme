@@ -6,7 +6,7 @@ function initmap(latitude, longitude, name, idname) {
 
 	var mapOptions = {
 		center: latlng,
-		zoom: 14,
+		zoom: 16,
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		streetViewControl: false
 	};
@@ -14,9 +14,13 @@ function initmap(latitude, longitude, name, idname) {
 
 	var marker = new google.maps.Marker({
 		position: latlng,
-		title: name
+		map: map,
+		animation: google.maps.Animation.DROP,
+		title: name,
+		draggable: false
 	});
-	marker.setMap(map);
+
+	google.maps.event.addDomListener(marker, 'dragend', function() { markerMoved(marker, name); });
 
 	var circleOptions = {
 		strokeColor: "#FF0000",
@@ -29,4 +33,28 @@ function initmap(latitude, longitude, name, idname) {
 		radius: 100
 	};
 	circle = new google.maps.Circle(circleOptions);
+	return marker;
+}
+
+function markerMoved(marker, name) {
+	$.ajax( {
+		type:'Post',
+		url:'https://glass-remindme.appspot.com/main',
+		data: {
+			operation: "updateMarker",
+			tag: name,
+			latitude: marker.position.lat(),
+			longitude: marker.position.lng()
+			},
+		success:function(data) {
+//		 alert(data);
+		}
+
+		})
+}
+
+function markerEditable(marker, flag) {
+	var draggable=marker.getDraggable();
+	console.log("draggable="+draggable)
+	marker.setDraggable(!draggable);
 }
